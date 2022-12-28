@@ -1,0 +1,72 @@
+<style>
+  body {
+    background-image: url("https://images4.alphacoders.com/118/thumb-1920-1183344.png");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+  .button {
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+
+  .button1 {
+    background-color: white;
+    color: black;
+    border: 2px solid Pink;
+  }
+
+  .button1:hover {
+    background-color: Pink;
+    color: white;
+  }
+
+  .center {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
+</style>
+<body>
+  <div>
+    <br />
+    <p
+      id="copy_me_senpai_owo"
+      ;
+      style="text-align: left; color: rgba(255, 122, 89, 0)"
+    >
+      ${req.query.code}
+    </p>
+    <br />
+    <div class="center">
+      <button
+        onclick="copyElementText('copy_me_senpai_owo')"
+        class="button button1"
+      >
+        Скопировать ключ в буфер обмена
+      </button>
+    </div>
+  </div>
+  <script>
+    function copyElementText(id) {
+      var text = document.getElementById(id).innerText;
+      var elem = document.createElement("textarea");
+      document.body.appendChild(elem);
+      elem.value = text;
+      elem.select();
+      document.execCommand("copy");
+      document.body.removeChild(elem);
+    }
+  </script>
+</body>
