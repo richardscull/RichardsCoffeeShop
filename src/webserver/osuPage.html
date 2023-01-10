@@ -1,6 +1,7 @@
 <style>
   body {
-    background-image: url("https://images4.alphacoders.com/118/thumb-1920-1183344.png");
+    /*  background-image: url('https://images4.alphacoders.com/118/thumb-1920-1183344.png'); */
+    background-color: #323232;
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
@@ -37,9 +38,48 @@
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
   }
+  #vidcontent {
+    width: 500;
+    height: 281;
+    object-fit: cover; /* for those who do support it */
+  }
+  .p-hero__bg-mv {
+    display: block;
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    -webkit-transform: translate(-50%, -30%);
+    transform: translate(-50%, -30%);
+    width: 100vw;
+    min-width: 178.704vh;
+    height: 100vh;
+    min-height: 55.959vw;
+  }
+  .p-hero__bg-mv video {
+    display: block;
+    position: absolute;
+    top: -25%;
+    left: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
 </style>
 <body>
   <div>
+    <div class="p-hero__bg-mv">
+      <video
+        id="hero_movie"
+        src="./public/test.mp4"
+        autoplay
+        muted
+        loop
+      ></video>
+    </div>
+    <!--     <video width="320" height="240" controls>
+      <source src="test.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video> -->
+
     <br />
     <p
       id="copy_me_senpai_owo"
@@ -61,12 +101,15 @@
   <script>
     function copyElementText(id) {
       var text = document.getElementById(id).innerText;
-      var elem = document.createElement("textarea");
+      var elem = document.createElement('textarea');
       document.body.appendChild(elem);
       elem.value = text;
       elem.select();
-      document.execCommand("copy");
+      document.execCommand('copy');
       document.body.removeChild(elem);
     }
+    const video = document.querySelector('video');
+    video.muted = true;
+    video.play();
   </script>
 </body>

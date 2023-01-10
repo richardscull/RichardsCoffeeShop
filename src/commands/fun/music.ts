@@ -1,5 +1,6 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import {
+  AudioPlayerStatus,
   createAudioPlayer,
   createAudioResource,
   joinVoiceChannel,
@@ -40,41 +41,66 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       );
   }
 
+  //
+  // WARNING: RAW CODE DOWN THERE
+  // WILL BE REWRITTEN SOON 💀
+  //
+
   switch (commandName) {
     case 'play': {
       if (!interaction.options.getString('track')) break;
-      const trackURL = interaction.options.getString('track');
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const trackURL = interaction.options.getString('track')!;
       const connection = joinVoiceChannel({
         channelId: memberInVoice.id,
         guildId: interaction.guildId,
         adapterCreator: interaction.guild.voiceAdapterCreator,
       });
 
-      const yt_info = await play.search(trackURL as string, {
-        limit: 1,
-      });
-
-      const stream = await play.stream(yt_info[0].url);
-
+      console.log(play.yt_validate(trackURL));
+      console.log(play.sp_validate(trackURL));
+      let stream;
+      if (
+        play.sp_validate(trackURL) !== 'search' &&
+        play.sp_validate(trackURL)
+      ) {
+        if (play.is_expired()) {
+          await play.refreshToken(); // This will check if access token has expired or not. If yes, then refresh the token.
+        }
+        const sp_data = await play.spotify(trackURL); // This will get spotify data from the url [ I used track url, make sure to make a logic for playlist, album ]
+        console.log(sp_data);
+        const searched = await play.search(`${sp_data.name}`, {
+          limit: 1,
+        }); // This will search the found track on youtube.
+        stream = await play.stream(searched[0].url); // This will create stream from the above search
+      } else if (play.yt_validate(trackURL)) {
+        const yt_info = await play.search(trackURL as string, {
+          limit: 1,
+        });
+        console.log(yt_info);
+        stream = await play.stream(yt_info[0].url);
+      } else {
+        return interaction.reply('No match for this url :(');
+      }
       const resource = createAudioResource(stream.stream, {
         inputType: stream.type,
       });
-
       const player = createAudioPlayer({
         behaviors: {
           noSubscriber: NoSubscriberBehavior.Play,
         },
       });
-
       player.play(resource);
-
+      player.on(AudioPlayerStatus.Idle, async () => {
+        return connection.destroy();
+      });
       connection.subscribe(player);
+      interaction.reply('Pong!');
+
       break;
     }
-
     default: {
       throw new Error();
     }
   }
-  interaction.reply('Pong!');
 }
