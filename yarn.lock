@@ -1394,6 +1394,11 @@
   "resolved" "https://registry.npmjs.org/is-path-inside/-/is-path-inside-3.0.3.tgz"
   "version" "3.0.3"
 
+"is-typedarray@^1.0.0":
+  "integrity" "sha512-cyA56iCMHAh5CdzjJIa4aohJyeO1YbwLi3Jc35MmRU6poroFjIGZzUzupGiRPOjgHg9TLu43xbpwXk523fMxKA=="
+  "resolved" "https://registry.npmjs.org/is-typedarray/-/is-typedarray-1.0.0.tgz"
+  "version" "1.0.0"
+
 "isarray@~1.0.0":
   "integrity" "sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ=="
   "resolved" "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz"
@@ -1435,6 +1440,13 @@
   "integrity" "sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw=="
   "resolved" "https://registry.npmjs.org/json-stable-stringify-without-jsonify/-/json-stable-stringify-without-jsonify-1.0.1.tgz"
   "version" "1.0.1"
+
+"jsoning@^0.13.23":
+  "integrity" "sha512-a6KC57J/CI60vUtV1pKMqxr/eF0vU9OU5U2n39sro2tZkwHojK8T9AlCz4Btqvz/xfWVzkWfut/NIJxwMmQqvQ=="
+  "resolved" "https://registry.npmjs.org/jsoning/-/jsoning-0.13.23.tgz"
+  "version" "0.13.23"
+  dependencies:
+    "write-file-atomic" "^3.0.3"
 
 "jsonwebtoken@^9.0.0":
   "integrity" "sha512-tuGfYXxkQGDPnLJ7SibiQgVgeDgfbPq2k2ICcbgqW8WxWLBAxKQM/ZCu/IT8SOSwmaYl4dpTFCW5xZv7YbbWUw=="
@@ -2152,6 +2164,11 @@
     "get-intrinsic" "^1.0.2"
     "object-inspect" "^1.9.0"
 
+"signal-exit@^3.0.2":
+  "integrity" "sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ=="
+  "resolved" "https://registry.npmjs.org/signal-exit/-/signal-exit-3.0.7.tgz"
+  "version" "3.0.7"
+
 "simple-update-notifier@^1.0.7":
   "integrity" "sha512-VpsrsJSUcJEseSbMHkrsrAVSdvVS5I96Qo1QAQ4FxQ9wXFcB+pjj7FB7/us9+GcgfW4ziHtYMc1J0PLczb55mg=="
   "resolved" "https://registry.npmjs.org/simple-update-notifier/-/simple-update-notifier-1.1.0.tgz"
@@ -2345,6 +2362,13 @@
     "media-typer" "0.3.0"
     "mime-types" "~2.1.24"
 
+"typedarray-to-buffer@^3.1.5":
+  "integrity" "sha512-zdu8XMNEDepKKR+XYOXAVPtWui0ly0NtohUscw+UmaHiAWT8hrV1rr//H6V+0DvJ3OQ19S979M0laLfX8rm82Q=="
+  "resolved" "https://registry.npmjs.org/typedarray-to-buffer/-/typedarray-to-buffer-3.1.5.tgz"
+  "version" "3.1.5"
+  dependencies:
+    "is-typedarray" "^1.0.0"
+
 "typescript@^4.9.4", "typescript@>=2.8.0 || >= 3.2.0-dev || >= 3.3.0-dev || >= 3.4.0-dev || >= 3.5.0-dev || >= 3.6.0-dev || >= 3.6.0-beta || >= 3.7.0-dev || >= 3.7.0-beta":
   "integrity" "sha512-Uz+dTXYzxXXbsFpM86Wh3dKCxrQqUcVMxwU54orwlJjOpO3ao8L7j5lH+dWfTwgCwIuM9GQ2kvVotzYJMXTBZg=="
   "resolved" "https://registry.npmjs.org/typescript/-/typescript-4.9.4.tgz"
@@ -2431,6 +2455,16 @@
   "integrity" "sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ=="
   "resolved" "https://registry.npmjs.org/wrappy/-/wrappy-1.0.2.tgz"
   "version" "1.0.2"
+
+"write-file-atomic@^3.0.3":
+  "integrity" "sha512-AvHcyZ5JnSfq3ioSyjrBkH9yW4m7Ayk8/9My/DD9onKeu/94fwrMocemO2QAJFAlnnDN+ZDS+ZjAR5ua1/PV/Q=="
+  "resolved" "https://registry.npmjs.org/write-file-atomic/-/write-file-atomic-3.0.3.tgz"
+  "version" "3.0.3"
+  dependencies:
+    "imurmurhash" "^0.1.4"
+    "is-typedarray" "^1.0.0"
+    "signal-exit" "^3.0.2"
+    "typedarray-to-buffer" "^3.1.5"
 
 "ws@^8.11.0":
   "integrity" "sha512-HPG3wQd9sNQoT9xHyNCXoDUa+Xw/VevmY9FoHyQ+g+rrMn4j6FB4np7Z0OhdTgjx6MgQLK7jwSy1YecU1+4Asg=="

@@ -10,6 +10,7 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
+    "jsoning": "^0.13.23",
     "jsonwebtoken": "^9.0.0",
     "libsodium-wrappers": "^0.7.10",
     "mysql": "^2.18.1",
@@ -44,7 +45,7 @@
     "dev": "concurrently \"yarn clean\" \"tsc -w\" \"yarn copy-files\" \"nodemon build/index.js \"",
     "clean": "rimraf dist/",
     "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.mp4 src/**/*.css build/",
-    "deploy-commands": "yarn clean && tsc && yarn copy-files && node build/client/deploy-commands.js",
+    "deploy-commands": "concurrently \"yarn clean\" \"tsc\" \"yarn copy-files\" \"node build/client/deploy-commands.js \"",
     "lint": "eslint . --ext .ts",
     "spotifyAuth": "node src/spotifyAuth.ts"
   },
