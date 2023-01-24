@@ -52,7 +52,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
   const memberVoice = interaction.member.voice?.channel;
   const commandName = interaction.options.getSubcommand();
-  let guildPlayer = await client.GetGuildPlayer(interaction.guildId);
+  let guildPlayer = await client.getGuildPlayer(interaction.guildId);
 
   if (!memberVoice) {
     return await interaction.reply({
@@ -118,7 +118,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
           },
         });
 
-        guildPlayer = await client.GetGuildPlayer(interaction.guildId);
+        guildPlayer = await client.getGuildPlayer(interaction.guildId);
       }
       const userURL = interaction.options.getString('track', true);
       const trackURL = await validateUrl(userURL);

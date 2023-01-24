@@ -20,7 +20,6 @@ const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
 rest
   .put(Routes.applicationCommands(config.CLIENT_ID), { body: commands })
   .then(() => {
-    console.log(commands);
     console.log('Successfully registered application commands.');
   })
   .catch(console.error);
