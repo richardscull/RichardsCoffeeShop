@@ -5,10 +5,9 @@ module.exports = {
   once: true,
   async execute(client: Client) {
     console.log(
-      '\x1b[32m%s\x1b[0m',
-      `Ready! Logged in as ${client.user?.tag}.`
+      '\x1b[32m',
+      `✅ Ready! Logged in as \x1b[1m${client.user?.tag}`
     );
-    console.log(`Servers: ${client.guilds.cache.size}\n`);
     client.user?.setPresence({
       activities: [{ name: '🪴 недоразвитый цветок' }],
       status: 'online',
