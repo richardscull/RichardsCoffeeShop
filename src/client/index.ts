@@ -1,9 +1,13 @@
-import { Client, GatewayIntentBits, Partials } from "discord.js";
-import config from "../config";
-import registerEvents from "../events";
-import { serverStart } from "../osuserver/main";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { GatewayIntentBits, Partials } from 'discord.js';
+import config from '../config';
+//import registerEvents from '../events';
+import { serverStart } from '../webserver/main';
+import { ExtendedClient } from './ExtendedClient';
 
-export const client = new Client({
+//registerEvents(client);
+
+export const client = new ExtendedClient({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
@@ -14,17 +18,15 @@ export const client = new Client({
   ],
   partials: [Partials.Channel, Partials.Message],
 });
-registerEvents(client);
 
-const startOsuServer = async () => {
+//NOTICE: I currently closed my eyes on web server.
+//Will continue working with it after I done with main features for bot.
+const startWebServer = async () => {
   await serverStart().catch((err) => {
-    console.error(`[Osu Server Error]`, err);
+    console.error(`[Web Server Error]`, err);
     process.exit(1);
   });
 };
-startOsuServer();
-
-client.login(config.DISCORD_TOKEN).catch((err) => {
-  console.error(`[Discord Login Error]`, err);
-  process.exit(1);
-});
+startWebServer();
+client.loadEvents();
+client.discordLogin();
