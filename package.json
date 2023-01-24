@@ -45,7 +45,7 @@
     "typescript": "^4.9.4"
   },
   "scripts": {
-    "build": "yarn clean && tsc && yarn copy-files",
+    "build": "tsc && yarn copy-files",
     "start": "node build/index.js ",
     "dev": "concurrently \"tsc -w\" \"yarn copy-files\" \"nodemon build/index.js --ignore *.json\"",
     "clear": "rimraf build/",
