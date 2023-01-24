@@ -19,14 +19,14 @@ export const client = new ExtendedClient({
   partials: [Partials.Channel, Partials.Message],
 });
 
-//NOTICE: I currently closed my eyes on web server.
-//Will continue working with it after I done with main features for bot.
 const startWebServer = async () => {
   await serverStart().catch((err) => {
     console.error(`[Web Server Error]`, err);
     process.exit(1);
   });
 };
+
 startWebServer();
 client.loadEvents();
+
 client.discordLogin();

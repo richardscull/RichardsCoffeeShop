@@ -24,11 +24,12 @@ export class ExtendedClient extends Client {
 
   //NOTICE: Currently no use for it, but I will probably do something with it someday
   database = {
-    guild: new Jsoning('users.json'),
+    guilds: new Jsoning('guilds.json'),
+    osuUsers: new Jsoning('osuUsers.json'),
   };
 
   async discordLogin() {
-    await this.login(config.DISCORD_TOKEN).catch((err) => {
+    return await this.login(config.DISCORD_TOKEN).catch((err) => {
       console.error(`[Discord Login Error]`, err);
       process.exit(1);
     });
@@ -53,11 +54,15 @@ export class ExtendedClient extends Client {
     });
   }
 
-  async GetGuild(guildID: string) {
-    return this.database.guild.get(guildID);
+  async getOsuAccount(discordId: string) {
+    return this.database.osuUsers.get(discordId);
   }
 
-  async GetGuildPlayer(guildID: string) {
+  async deleteOsuAccount(discordId: string) {
+    return this.database.osuUsers.delete(discordId);
+  }
+
+  async getGuildPlayer(guildID: string) {
     if (this.musicPlayer.has(guildID)) return this.musicPlayer.get(guildID);
   }
 }
