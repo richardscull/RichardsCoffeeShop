@@ -1,0 +1,71 @@
+body {
+  /*  background-image: url('https://images4.alphacoders.com/118/thumb-1920-1183344.png'); */
+  background-color: #323232;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+}
+.button {
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  transition-duration: 0.4s;
+  cursor: pointer;
+}
+
+.button1 {
+  background-color: #424549;
+  border: 2px solid Pink;
+}
+
+.button1:hover {
+  background-color: Pink;
+}
+
+.button2 {
+  background-color: #424549;
+  border: 2px solid #7289da;
+}
+
+.button2:hover {
+  background-color: #7289da;
+}
+
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+#vidcontent {
+  width: 500;
+  height: 281;
+  object-fit: cover; /* for those who do support it */
+}
+.p-hero__bg-mv {
+  display: block;
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -30%);
+  transform: translate(-50%, -30%);
+  width: 100vw;
+  min-width: 178.704vh;
+  height: 100vh;
+  min-height: 55.959vw;
+}
+.p-hero__bg-mv video {
+  display: block;
+  position: absolute;
+  top: -25%;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}

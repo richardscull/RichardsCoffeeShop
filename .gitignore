@@ -2,4 +2,6 @@ node_modules
 .env
 .data
 .vscode
+guilds.json
+osuUsers.json
 build
