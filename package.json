@@ -10,12 +10,10 @@
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
-    "jsoning": "^0.13.23",
     "jsonwebtoken": "^9.0.0",
     "libsodium-wrappers": "^0.7.10",
     "mysql": "^2.18.1",
     "ngrok": "^4.3.3",
-    "os": "^0.1.2",
     "path": "^0.12.7",
     "play-dl": "^1.9.6",
     "pocketbase": "^0.9.0"
@@ -42,12 +40,11 @@
   "scripts": {
     "build": "yarn clean && tsc && yarn copy-files",
     "start": "node build/index.js ",
-    "dev": "concurrently \"yarn clean\" \"tsc -w\" \"yarn copy-files\" \"nodemon build/index.js \"",
+    "dev": "concurrently \"yarn clean\" \"tsc -w\" \"nodemon build/index.js \" \"yarn copy-files\"",
     "clean": "rimraf dist/",
-    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.mp4 src/**/*.css build/",
-    "deploy-commands": "concurrently \"yarn clean\" \"tsc\" \"yarn copy-files\" \"node build/client/deploy-commands.js \"",
-    "lint": "eslint . --ext .ts",
-    "spotifyAuth": "node src/spotifyAuth.ts"
+    "copy-files": "copyfiles -u 1 src/**/*.html src/**/*.css build/",
+    "deploy-commands": "yarn clean && tsc && yarn copy-files && node build/deploy-commands.js",
+    "lint": "eslint . --ext .ts"
   },
   "keywords": [],
   "author": "",

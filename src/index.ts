@@ -1,1 +1,1 @@
-import './client/index';
+import "./client/index";
