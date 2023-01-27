@@ -1,37 +1,31 @@
 <!DOCTYPE html>
 <head>
   <link rel="stylesheet" href="osuPage.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Richard's coffee shop</title>
 </head>
 <body>
   <div>
-    <div class="p-hero__bg-mv">
+    <div class="background_video">
       <video
-        id="hero_movie"
         src="./public/test.mp4"
         autoplay
         muted
         loop
+        object-fit="cover"
       ></video>
     </div>
     <div class="center">
-      <h1 style="color:White;">Ваш аккаунт был успешно привязан! 👍</h3>
+      <h1 style="color: White; font-size: calc(16px + 1vw)">
+        Ваш аккаунт был успешно привязан! 👍
+      </h1>
       <br />
-      <button
-      onclick="location.href = '/logout'"
-      id="logout"
-      class="button button1"
-    >
-      Отвязать osu! аккаунт
-    </button>
+      <button onclick="location.href = '/logout'" class="button buttonOsu">
+        Отвязать osu! аккаунт
+      </button>
     </div>
   </div>
-  <script type="module" src="main.js">
-   var myVideo = document.getElementById("hero_movie");
-   myVideo.onloadeddata = function() {
-     document.querySelector('.loading').style.display = 'none';
-  };
-
+  <script>
     const video = document.querySelector('video');
     video.muted = true;
     video.play();

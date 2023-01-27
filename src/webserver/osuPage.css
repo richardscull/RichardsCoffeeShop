@@ -1,5 +1,4 @@
 body {
-  /*  background-image: url('https://images4.alphacoders.com/118/thumb-1920-1183344.png'); */
   background-color: #323232;
   background-repeat: no-repeat;
   background-attachment: fixed;
@@ -18,22 +17,13 @@ body {
   cursor: pointer;
 }
 
-.button1 {
+.buttonOsu {
   background-color: #424549;
   border: 2px solid Pink;
 }
 
-.button1:hover {
+.buttonOsu:hover {
   background-color: Pink;
-}
-
-.button2 {
-  background-color: #424549;
-  border: 2px solid #7289da;
-}
-
-.button2:hover {
-  background-color: #7289da;
 }
 
 .center {
@@ -49,7 +39,7 @@ body {
   height: 281;
   object-fit: cover; /* for those who do support it */
 }
-.p-hero__bg-mv {
+.background_video {
   display: block;
   position: absolute;
   top: 30%;
@@ -61,11 +51,12 @@ body {
   height: 100vh;
   min-height: 55.959vw;
 }
-.p-hero__bg-mv video {
+.background_video video {
   display: block;
   position: absolute;
   top: -25%;
   left: 0;
   width: 100% !important;
   height: 100% !important;
+  filter: blur(3px);
 }

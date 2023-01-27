@@ -6,6 +6,7 @@ import config from '../config';
 //import registerEvents from '../events';;
 import path from 'path';
 import * as fs from 'fs';
+import { serverStart } from '../webserver/main';
 
 interface guildObject {
   connection: VoiceConnection;
@@ -37,7 +38,6 @@ export class ExtendedClient extends Client {
 
   loadEvents() {
     const eventsDir = path.join(__dirname, '..', 'events');
-    console.log(eventsDir);
     fs.readdir(eventsDir, (err, files) => {
       if (err) console.log(err);
       else
@@ -51,6 +51,13 @@ export class ExtendedClient extends Client {
           }
           console.log('Event Loaded: ' + file.split('.')[0]);
         });
+    });
+  }
+
+  async startWebServer() {
+    await serverStart().catch((err) => {
+      console.error(`[Web Server Error]`, err);
+      process.exit(1);
     });
   }
 

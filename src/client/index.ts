@@ -1,11 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { GatewayIntentBits, Partials } from 'discord.js';
-import config from '../config';
-//import registerEvents from '../events';
-import { serverStart } from '../webserver/main';
 import { ExtendedClient } from './ExtendedClient';
-
-//registerEvents(client);
 
 export const client = new ExtendedClient({
   intents: [
@@ -19,14 +13,7 @@ export const client = new ExtendedClient({
   partials: [Partials.Channel, Partials.Message],
 });
 
-const startWebServer = async () => {
-  await serverStart().catch((err) => {
-    console.error(`[Web Server Error]`, err);
-    process.exit(1);
-  });
-};
+client.startWebServer();
 
-startWebServer();
 client.loadEvents();
-
 client.discordLogin();

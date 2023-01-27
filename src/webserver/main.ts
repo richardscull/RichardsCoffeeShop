@@ -18,9 +18,11 @@ export async function serverStart() {
   });
   console.log('\x1b[34m', `💤 Web server is loaded!`);
   console.log('\x1b[34m', `Currently hosted at \x1b[1m${ngrokUrl}`, '\x1b[0m');
+  await expressJs(ngrokUrl);
 
-  return await expressJs(ngrokUrl);
+  return ngrokUrl as string;
 }
+
 
 async function expressJs(ngrokUrl: string) {
   const app = express();
@@ -28,8 +30,6 @@ async function expressJs(ngrokUrl: string) {
     .use('/', express.static(__dirname))
     .use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
     .use(cookieParser());
-
-
 
   app.get('/login', async (req, res) => {
     const scope = ['identify'];
@@ -68,7 +68,7 @@ async function expressJs(ngrokUrl: string) {
       }
     );
 
-    return res.redirect(`${ngrokUrl}/osu?code=${data.data.refresh_token}`);
+    return res.redirect(`${ngrokUrl}/osu?code=${data?.data.refresh_token}`);
   });
 
   app.get('/callback', async (req, res) => {
