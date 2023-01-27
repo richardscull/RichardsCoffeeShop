@@ -102,6 +102,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
 
         player.once(AudioPlayerStatus.Playing, async () => {
           embedInterval = setInterval(async () => {
+            //Will be removed in next versions
             console.log(new Date());
           }, 15000); //15s timer
         });
@@ -133,7 +134,7 @@ export async function execute(interaction: ChatInputCommandInteraction) {
     case 'stop': {
       //TODO: Clear queue
       guildPlayer?.player.stop();
-      console.log('yea');
+      console.log('Player stopped!');
       break;
     }
 
@@ -161,13 +162,11 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       play.sp_validate(url) === 'album'
     ) {
       const sp_data = await play.spotify(url);
-      console.log(sp_data);
       const searched = await play.search(`${sp_data.name}`, {
         limit: 1,
       });
       return searched[0].url;
     }
-    console.log(play.yt_validate(url));
     if (play.yt_validate(url) === 'video') {
       return url;
     }
