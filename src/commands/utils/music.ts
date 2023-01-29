@@ -14,7 +14,6 @@ import {
 import { client } from '../../client/index';
 import play from 'play-dl';
 
-//TODO: Move subcommands to somethere else maybe?
 export const data = new SlashCommandBuilder()
   .setName('music')
   .setDescription('Music commands')
@@ -34,7 +33,6 @@ export const data = new SlashCommandBuilder()
   );
 
 export async function execute(interaction: ChatInputCommandInteraction) {
-  //Maybe change name of const
   const threadEmbed = new EmbedBuilder()
     .setTimestamp()
     .setColor('#6a0cee')
@@ -178,6 +176,5 @@ export async function execute(interaction: ChatInputCommandInteraction) {
       return yt_info[0].url;
     }
     return 'error';
-    // return interaction.reply('No match for this url :(');
   }
 }

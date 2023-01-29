@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { ChatInputCommandInteraction } from 'discord.js';
-//import { client } from '../../client/index';
 
 export const data = new SlashCommandBuilder()
   .setName('ping')

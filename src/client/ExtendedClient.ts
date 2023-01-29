@@ -8,6 +8,7 @@ import path from 'path';
 import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
 
+
 interface guildObject {
   connection: VoiceConnection;
   player: AudioPlayer;
@@ -18,18 +19,16 @@ interface guildObject {
   };
 }
 
-//TODO: Change class name
 export class ExtendedClient extends Client {
-  //TODO: Add types for Map
   musicPlayer = new Map<string, guildObject>();
 
-  //NOTICE: Currently no use for it, but I will probably do something with it someday
   database = {
     guilds: new Jsoning('guilds.json'),
     osuUsers: new Jsoning('osuUsers.json'),
   };
 
   async discordLogin() {
+    this.loadEvents();
     return await this.login(config.DISCORD_TOKEN).catch((err) => {
       console.error(`[Discord Login Error]`, err);
       process.exit(1);
@@ -39,8 +38,8 @@ export class ExtendedClient extends Client {
   loadEvents() {
     const eventsDir = path.join(__dirname, '..', 'events');
     fs.readdir(eventsDir, (err, files) => {
-      if (err) console.log(err);
-      else
+      if (err) throw new Error("Couldn't find the events dir!");
+      else {
         files.forEach((file) => {
           // eslint-disable-next-line @typescript-eslint/no-var-requires
           const event = require(eventsDir + '/' + file);
@@ -49,8 +48,8 @@ export class ExtendedClient extends Client {
           } else {
             this.on(event.name, (...args) => event.execute(...args));
           }
-          console.log('Event Loaded: ' + file.split('.')[0]);
         });
+      }
     });
   }
 

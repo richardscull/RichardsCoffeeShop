@@ -13,7 +13,4 @@ export const client = new ExtendedClient({
   partials: [Partials.Channel, Partials.Message],
 });
 
-client.startWebServer();
-
-client.loadEvents();
-client.discordLogin();
+Promise.all([client.discordLogin(), client.startWebServer()]);
