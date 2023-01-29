@@ -10,19 +10,23 @@ import {
   discordUserResponse,
 } from '../utils/types';
 import { client } from '../client';
+import chalk from 'chalk';
 
 export async function serverStart() {
   const ngrokUrl = await ngrok.connect({
-    authtoken: process.env.NGROK_TOKEN,
-    addr: '3000',
+    authtoken: config.NGROK_TOKEN,
+    addr: config.NGROK_PORT,
   });
-  console.log('\x1b[34m', `💤 Web server is loaded!`);
-  console.log('\x1b[34m', `Currently hosted at \x1b[1m${ngrokUrl}`, '\x1b[0m');
-  await expressJs(ngrokUrl);
 
+  console.log(chalk.blue(`💤 Web server is loaded!`));
+  console.log(chalk.blue(`Currently hosted at `) + chalk.blue.bold(ngrokUrl));
+  console.log(
+    chalk.yellow(`// Don't forget to change Discord/osu! callback urls!`)
+  );
+
+  await expressJs(ngrokUrl);
   return ngrokUrl as string;
 }
-
 
 async function expressJs(ngrokUrl: string) {
   const app = express();
@@ -34,7 +38,7 @@ async function expressJs(ngrokUrl: string) {
   app.get('/login', async (req, res) => {
     const scope = ['identify'];
     const authUrl = `https://discord.com/api/oauth2/authorize?client_id=${
-      process.env.CLIENT_ID
+      config.DISCORD_ID
     }&redirect_uri=${ngrokUrl}/callback&response_type=code&scope=${scope.join(
       '%20'
     )}`;
@@ -43,8 +47,8 @@ async function expressJs(ngrokUrl: string) {
   });
 
   app.get('/osu', async (req, res) => {
-    const client_secret = process.env.OSU_SECRET;
-    const client_id = process.env.OSU_ID;
+    const client_secret = config.OSU_SECRET;
+    const client_id = config.OSU_ID;
 
     if (!req.query.code)
       return res.redirect(
@@ -72,11 +76,10 @@ async function expressJs(ngrokUrl: string) {
   });
 
   app.get('/callback', async (req, res) => {
-    const clientId = config.CLIENT_ID;
-    const clientSecret = config.CLIENT_SECRET;
+    const clientId = config.DISCORD_ID;
+    const clientSecret = config.DISCORD_SECRET;
     const redirectUri = `${ngrokUrl}/callback`;
     const code = req.query.code;
-
     try {
       if (code) {
         const { data } = await axios.post(
@@ -85,6 +88,7 @@ async function expressJs(ngrokUrl: string) {
             client_id: clientId,
             client_secret: clientSecret,
             grant_type: 'authorization_code',
+            score: 'identify',
             code: code.toString(),
             redirect_uri: redirectUri,
           },
@@ -137,10 +141,12 @@ async function expressJs(ngrokUrl: string) {
 
       const osuAccount = await client.getOsuAccount(user.data.id);
       if (!osuAccount) {
-        if (!req.query.code)
+        if (!req.query.code) {
+          const client_id = config.OSU_ID;
           return res.redirect(
-            `https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=${process.env.OSU_ID}&redirect_uri=${ngrokUrl}/&scope=public&state=code`
+            `https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${ngrokUrl}/&scope=public&state=code`
           );
+        }
 
         await client.database.osuUsers.set(user.data.id, {
           refresh_token: req.query.code,
@@ -153,5 +159,5 @@ async function expressJs(ngrokUrl: string) {
     }
   });
 
-  app.listen(3000);
+  app.listen(config.NGROK_PORT);
 }

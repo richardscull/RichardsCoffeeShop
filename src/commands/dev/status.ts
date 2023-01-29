@@ -22,16 +22,15 @@ export const data = new SlashCommandBuilder()
   .setDescription(`Bot's status`);
 
 const buttonsRow = new ActionRowBuilder<ButtonBuilder>().setComponents(
-  //CHANGE THIS BUTTON FOR SOMETHING USEFUL
+  //Note: Doesn't sure if I want to implement this feature, disabled for now
   new ButtonBuilder()
     .setCustomId('createTicket')
     .setLabel('📨 Сообщить о ошибке')
     .setStyle(ButtonStyle.Secondary)
     .setDisabled(true),
   new ButtonBuilder()
-    .setURL('https://github.com/richardscull/TS_DiscordBot')
-    .setLabel('GitHub')
-    .setEmoji('991010039038890075')
+    .setURL('https://github.com/richardscull/RichardsCoffeeShop')
+    .setLabel('📂 GitHub')
     .setStyle(ButtonStyle.Link)
 );
 
@@ -55,7 +54,7 @@ export async function execute(
       iconURL: client.user?.displayAvatarURL(),
     })
     .setColor('NotQuiteBlack')
-    .setTitle('> "_Кофейня Ричарда_"')
+    .setTitle(`> "_${client.user?.username}_"`)
     .setFields(
       {
         name: bold(`📋 Общая информация`).toString(),
@@ -94,9 +93,6 @@ export async function execute(
   const lastestCommitId = await axios({
     baseURL: 'https://api.github.com/',
     url: config.GITHUB_BRANCH_URL,
-    headers: {
-      Authorization: `Bearer ${config.GITHUB_TOKEN}`,
-    },
   }).then((result) => result.data.sha as string);
 
   if (statusEmbed && statusEmbed.data && statusEmbed.data.fields) {

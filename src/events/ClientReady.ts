@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { Client, Events } from 'discord.js';
 
 module.exports = {
@@ -5,8 +6,8 @@ module.exports = {
   once: true,
   async execute(client: Client) {
     console.log(
-      '\x1b[32m',
-      `✅ Ready! Logged in as \x1b[1m${client.user?.tag}`
+      chalk.green(`✅ Ready! Logged in as `) +
+        chalk.green.bold(client.user?.tag)
     );
     client.user?.setPresence({
       activities: [{ name: '🪴 недоразвитый цветок' }],
