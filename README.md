@@ -37,7 +37,7 @@ NGROK_TOKEN= Ngrok authtoken
 NGROK_PORT= Ngrok port #By default is 3000
 
 # Yours GitHub working branch
-GITHUB_BRANCH= #By default is /master
+GITHUB_BRANCH_URL= #By default is /master
 ```
 
 After that, you can successfully run bot by typing ```npm run build``` or ```yarn build```!
