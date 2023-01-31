@@ -1,6 +1,5 @@
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { ExtendedClient } from './ExtendedClient';
-
 export const client = new ExtendedClient({
   intents: [
     GatewayIntentBits.Guilds,
@@ -13,4 +12,9 @@ export const client = new ExtendedClient({
   partials: [Partials.Channel, Partials.Message],
 });
 
-Promise.all([client.discordLogin(), client.startWebServer()]);
+async function serverInitializing() {
+  client.discordLogin();
+  client.ngrokUrl = await client.startWebServer();
+}
+
+serverInitializing();

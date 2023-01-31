@@ -4,6 +4,7 @@ import { Routes } from 'discord-api-types/v9';
 import config from '../config';
 import chalk from 'chalk';
 import * as commandModules from '../commands';
+import { Collection } from 'discord.js';
 
 type Command = {
   data: Pick<SlashCommandBuilder, 'toJSON'>;
@@ -12,7 +13,10 @@ type Command = {
 const commands: Pick<SlashCommandBuilder, 'toJSON'>[] = [];
 
 for (const module of Object.values<Command>(commandModules)) {
-  commands.push(module.data);
+  if (module.data && typeof module.data.toJSON === 'function') {
+    commands.push(module.data);
+    console.log(module.data);
+  }
 }
 
 const rest = new REST({ version: '9' }).setToken(config.DISCORD_TOKEN);
