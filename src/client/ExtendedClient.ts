@@ -8,7 +8,6 @@ import path from 'path';
 import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
 
-
 interface guildObject {
   connection: VoiceConnection;
   player: AudioPlayer;
@@ -21,6 +20,8 @@ interface guildObject {
 
 export class ExtendedClient extends Client {
   musicPlayer = new Map<string, guildObject>();
+
+  ngrokUrl = '';
 
   database = {
     guilds: new Jsoning('guilds.json'),
@@ -54,7 +55,7 @@ export class ExtendedClient extends Client {
   }
 
   async startWebServer() {
-    await serverStart().catch((err) => {
+    return await serverStart().catch((err) => {
       console.error(`[Web Server Error]`, err);
       process.exit(1);
     });
@@ -72,3 +73,5 @@ export class ExtendedClient extends Client {
     if (this.musicPlayer.has(guildID)) return this.musicPlayer.get(guildID);
   }
 }
+
+console.log

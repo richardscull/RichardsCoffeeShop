@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<head>
+  <link rel="stylesheet" href="placeholder.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Richard's coffee shop</title>
+</head>
+<body>
+  <div class="centered">
+    <img id="id-1" style="display: none" ; src="./public/placeholder.gif" />
+    <div class="placeholder-text">placeholder</div>
+    <button id="id-2" onclick="clickFunc1()">🐁</button>
+  </div>
+  <audio id="music" loop autoplay>
+    <source src="./public/placeholder-music.mp3" type="audio/mpeg" />
+  </audio>
+</body>
+<script>
+  function clickFunc1() {
+    document.getElementById('music').play();
+    var x = document.getElementById('id-1');
+    x.style.display = 'block';
+    var x2 = document.getElementById('id-2');
+    x2.style.display = 'none';
+  }
+</script>

@@ -22,7 +22,14 @@ export type discordUserResponse = {
 };
 
 export type osuAccountData = {
-    access_token: string;
-    refresh_token: string;
-    token_type: 'Bearer';
-  };
+  access_token: string;
+  refresh_token: string;
+  token_type: 'Bearer';
+};
+
+//For future /osu commands
+export type osuApiCreditals = {
+  access_token: string;
+  expires_in: number;
+  token_type: 'Bearer';
+};

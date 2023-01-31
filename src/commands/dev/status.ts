@@ -21,19 +21,6 @@ export const data = new SlashCommandBuilder()
   .setName('status')
   .setDescription(`Bot's status`);
 
-const buttonsRow = new ActionRowBuilder<ButtonBuilder>().setComponents(
-  //Note: Doesn't sure if I want to implement this feature, disabled for now
-  new ButtonBuilder()
-    .setCustomId('createTicket')
-    .setLabel('📨 Сообщить о ошибке')
-    .setStyle(ButtonStyle.Secondary)
-    .setDisabled(true),
-  new ButtonBuilder()
-    .setURL('https://github.com/richardscull/RichardsCoffeeShop')
-    .setLabel('📂 GitHub')
-    .setStyle(ButtonStyle.Link)
-);
-
 const imgForEmbed = new AttachmentBuilder(
   path.join(__dirname, '..', '..', '..', 'images', 'statusEmbed.png'),
   { name: 'statusEmbed.png' }
@@ -43,6 +30,17 @@ export async function execute(
   interaction: ChatInputCommandInteraction,
   client: ExtendedClient
 ) {
+  const buttonsRow = new ActionRowBuilder<ButtonBuilder>().setComponents(
+    new ButtonBuilder()
+      .setURL(client.ngrokUrl + '/placeholder')
+      .setLabel('🌿 Веб-сайт')
+      .setStyle(ButtonStyle.Link),
+    new ButtonBuilder()
+      .setURL('https://github.com/richardscull/RichardsCoffeeShop')
+      .setLabel('📂 GitHub')
+      .setStyle(ButtonStyle.Link)
+  );
+
   const guildsCached = client.guilds.cache.size.toString();
   const usersInGuilds = client.guilds.cache
     .reduce((acc, guild) => acc + guild.memberCount, 0)
@@ -54,7 +52,7 @@ export async function execute(
       iconURL: client.user?.displayAvatarURL(),
     })
     .setColor('NotQuiteBlack')
-    .setTitle(`> "_${client.user?.username}_"`)
+    .setTitle(`> "${client.user?.username}"`)
     .setFields(
       {
         name: bold(`📋 Общая информация`).toString(),
@@ -78,14 +76,12 @@ export async function execute(
         inline: true,
       }
     )
-    .setImage(`attachment://${imgForEmbed.name}`)
     .setFooter({
       text: `⚙️ Использовано памяти: Загрузка...; 🪄 Пинг: Загрузка...`,
     });
 
   const statusMsg = await interaction.reply({
     embeds: [statusEmbed],
-    files: [imgForEmbed],
     components: [buttonsRow],
     fetchReply: true,
   });
@@ -107,12 +103,14 @@ export async function execute(
   }
 
   const totalPing = statusMsg.createdTimestamp - interaction.createdTimestamp;
-  const usedMemory =
-    (((os.totalmem() - os.freemem()) / os.totalmem()) * 100).toFixed(2) + '%';
-
+  const used = process.memoryUsage().heapUsed / 1024 / 1024;
+  /*  const usedMemory =
+    (((os.totalmem() - os.freemem()) / os.totalmem()) * 100).toFixed(2) + '%'; */
+  const usedMemory = `${Math.round(used * 100) / 100} MB`;
   statusEmbed.setFooter({
     text: `⚙️ Использовано памяти: ${usedMemory}; 🪄 Пинг: ${totalPing}мс`,
   });
+  statusEmbed.setImage(`attachment://${imgForEmbed.name}`);
   await interaction.editReply({
     embeds: [statusEmbed],
     files: [imgForEmbed],

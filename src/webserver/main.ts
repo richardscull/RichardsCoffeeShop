@@ -101,6 +101,7 @@ async function expressJs(ngrokUrl: string) {
         res.cookie('discord_token', data.access_token, {
           httpOnly: true,
           secure: true,
+          maxAge: data.expires_in,
         });
         res.redirect('/');
       }
@@ -157,6 +158,10 @@ async function expressJs(ngrokUrl: string) {
     } catch (err) {
       console.log(err);
     }
+  });
+
+  app.get('/placeholder', async (req, res) => {
+    return res.sendFile(__dirname + '/placeholder.html');
   });
 
   app.listen(config.NGROK_PORT);
