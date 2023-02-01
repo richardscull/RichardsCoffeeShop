@@ -2,7 +2,6 @@ build
 node_modules
 guilds.json
 osuUsers.json
-package-lock.json
 .env
 .data
 .vscode
