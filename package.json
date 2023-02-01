@@ -13,6 +13,7 @@
     "express": "^4.18.2",
     "fs": "^0.0.1-security",
     "jsoning": "^0.13.23",
+    "libsodium-wrappers": "^0.7.10",
     "ngrok": "^4.3.3",
     "os": "^0.1.2",
     "path": "^0.12.7",
