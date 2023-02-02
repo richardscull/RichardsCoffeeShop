@@ -11,7 +11,7 @@ import {
 
 export const data = new SlashCommandBuilder()
   .setName('music')
-  .setDescription('Music commands')
+  .setDescription('Музыкальные команды')
   .setDMPermission(false)
   .addSubcommand(playSubcommand)
   .addSubcommand(stopSubcommand);

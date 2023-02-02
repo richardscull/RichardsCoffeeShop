@@ -7,6 +7,7 @@ import config from '../config';
 import path from 'path';
 import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
+import { osuAccountData } from '../utils/types';
 
 interface guildObject {
   connection: VoiceConnection;
@@ -62,7 +63,7 @@ export class ExtendedClient extends Client {
   }
 
   async getOsuAccount(discordId: string) {
-    return this.database.osuUsers.get(discordId);
+    return this.database.osuUsers.get(discordId) as osuAccountData;
   }
 
   async deleteOsuAccount(discordId: string) {
@@ -73,5 +74,3 @@ export class ExtendedClient extends Client {
     if (this.musicPlayer.has(guildID)) return this.musicPlayer.get(guildID);
   }
 }
-
-console.log

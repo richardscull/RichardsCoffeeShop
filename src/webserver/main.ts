@@ -8,6 +8,7 @@ import path from 'path';
 import {
   osuCredentialsGrantResponse,
   discordUserResponse,
+  osuRequestAccountData,
 } from '../utils/types';
 import { client } from '../client';
 import chalk from 'chalk';
@@ -149,8 +150,29 @@ async function expressJs(ngrokUrl: string) {
           );
         }
 
+        const { data: userCredentials } =
+          await axios.post<osuRequestAccountData>(
+            `https://osu.ppy.sh/oauth/token`,
+            {
+              client_id: config.OSU_ID,
+              client_secret: config.OSU_SECRET,
+              code: req.query.code,
+              grant_type: 'authorization_code',
+              redirect_uri: `${ngrokUrl}/`,
+            },
+            {
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
         await client.database.osuUsers.set(user.data.id, {
-          refresh_token: req.query.code,
+          expires_on: Date.now() + userCredentials.expires_in * 1000,
+          access_token: userCredentials.access_token,
+          refresh_token: userCredentials.refresh_token,
+          token_type: userCredentials.token_type,
         });
       }
 

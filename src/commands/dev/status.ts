@@ -19,7 +19,7 @@ import path from 'path';
 
 export const data = new SlashCommandBuilder()
   .setName('status')
-  .setDescription(`Bot's status`);
+  .setDescription(`Статус Discord бота`);
 
 const imgForEmbed = new AttachmentBuilder(
   path.join(__dirname, '..', '..', '..', 'images', 'statusEmbed.png'),
@@ -70,9 +70,10 @@ export async function execute(
             ngrok.getUrl() ? bold('Работает!') : bold('Выключен!')
           }\n` +
           `‣ Версия бота: Загрузка...\n` +
-          `‣ Рестарт сервера был: <t:${
-            Math.floor(Date.now() / 1000) - os.uptime()
-          }:R>`,
+          `‣ Рестарт сервера был: ${time(
+            Math.floor(Date.now() / 1000) - os.uptime(),
+            'R'
+          )}`,
         inline: true,
       }
     )
