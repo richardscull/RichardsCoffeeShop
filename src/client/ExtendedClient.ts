@@ -3,15 +3,15 @@ import { Client, EmbedBuilder } from 'discord.js';
 import { VoiceConnection, AudioPlayer } from '@discordjs/voice';
 import Jsoning from 'jsoning';
 import config from '../config';
-//import registerEvents from '../events';;
+import * as play from 'play-dl';
 import path from 'path';
 import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
 import { osuAccountData } from '../utils/types';
 
 interface guildObject {
-  connection: VoiceConnection;
-  player: AudioPlayer;
+  voiceConnection: VoiceConnection;
+  audioPlayer: AudioPlayer;
   embed: EmbedBuilder;
   status: {
     isPaused: boolean;
@@ -31,9 +31,21 @@ export class ExtendedClient extends Client {
 
   async discordLogin() {
     this.loadEvents();
+    this.loginToSpotify();
     return await this.login(config.DISCORD_TOKEN).catch((err) => {
       console.error(`[Discord Login Error]`, err);
       process.exit(1);
+    });
+  }
+
+  async loginToSpotify() {
+    await play.setToken({
+      spotify: {
+        client_id: config.SPOTIFY_ID,
+        client_secret: config.SPOTIFY_SECRET,
+        refresh_token: config.SPOTIFY_REFRESH_TOKEN,
+        market: config.SPOTIFY_MARKET,
+      },
     });
   }
 

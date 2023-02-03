@@ -17,6 +17,6 @@ export async function execute(
   //TODO: Clear queue
   if (!interaction.inCachedGuild()) return;
   const guildPlayer = await client.getGuildPlayer(interaction.guildId);
-  guildPlayer?.player.stop();
+  guildPlayer?.audioPlayer.stop();
   console.log('Player stopped!');
 }

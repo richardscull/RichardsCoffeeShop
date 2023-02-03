@@ -53,7 +53,7 @@ async function expressJs(ngrokUrl: string) {
 
     if (!req.query.code)
       return res.redirect(
-        `https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=${client_id}/&redirect_uri=${ngrokUrl}&scope=public&state=code`
+        `https://osu.ppy.sh/oauth/authorize?response_type=code&client_id=${client_id}&redirect_uri=${ngrokUrl}/&scope=public&state=code`
       );
 
     const data = await axios.post<osuCredentialsGrantResponse>(
@@ -77,6 +77,7 @@ async function expressJs(ngrokUrl: string) {
   });
 
   app.get('/callback', async (req, res) => {
+    if (!req.query.code) return res.redirect('/login');
     const clientId = config.DISCORD_ID;
     const clientSecret = config.DISCORD_SECRET;
     const redirectUri = `${ngrokUrl}/callback`;

@@ -20,13 +20,7 @@ export async function execute(
   interaction: ChatInputCommandInteraction,
   client: ExtendedClient
 ) {
-  if (!interaction.inCachedGuild())
-    return await interaction.reply({
-      content:
-        '> **Что-то пошло не так... **\n> 🚧 Эта комманда должна быть использована на сервере!',
-      ephemeral: true,
-    });
-
+  if (!interaction.inCachedGuild()) return;
   const memberVoice = interaction.member.voice?.channel;
   const commandName = interaction.options.getSubcommand();
 
@@ -54,7 +48,7 @@ export async function execute(
 const subcommandFunctions: Record<
   string,
   (
-    interaction: ChatInputCommandInteraction,
+    interaction: ChatInputCommandInteraction<'cached'>,
     client: ExtendedClient
   ) => Promise<void>
 > = {
