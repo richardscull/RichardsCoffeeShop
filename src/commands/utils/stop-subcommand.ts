@@ -14,9 +14,13 @@ export async function execute(
   interaction: ChatInputCommandInteraction,
   client: ExtendedClient
 ) {
-  //TODO: Clear queue
   if (!interaction.inCachedGuild()) return;
   const guildPlayer = await client.getGuildPlayer(interaction.guildId);
-  guildPlayer?.audioPlayer.stop();
-  console.log('Player stopped!');
+  if (!guildPlayer) return;
+  guildPlayer.queue = [];
+  guildPlayer.audioPlayer.stop();
+  interaction.reply({
+    content: '> 👍 Плеер был успешно остановлен!',
+    ephemeral: true,
+  });
 }

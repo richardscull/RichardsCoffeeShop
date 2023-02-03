@@ -9,3 +9,16 @@ export function secondsToDhm(seconds: number) {
   const mDisplay = m > 0 ? m + (m == 1 ? 'm ' : 'm ') : '';
   return dDisplay + hDisplay + mDisplay;
 }
+
+export function millisecondsToString(ms: number): string {
+  const date = new Date(ms);
+  let hours = date.getUTCHours().toString().padStart(2, '0');
+  const minutes = date.getUTCMinutes().toString().padStart(2, '0');
+  const seconds = date.getUTCSeconds().toString().padStart(2, '0');
+  if (hours === '00') {
+    hours = '';
+  } else {
+    hours += ':';
+  }
+  return `${hours}${minutes}:${seconds}`;
+}

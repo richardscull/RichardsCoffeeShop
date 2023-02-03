@@ -1,5 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { Client, EmbedBuilder } from 'discord.js';
+import {
+  AnyThreadChannel,
+  Client,
+  EmbedBuilder,
+  Message,
+} from 'discord.js';
 import { VoiceConnection, AudioPlayer } from '@discordjs/voice';
 import Jsoning from 'jsoning';
 import config from '../config';
@@ -9,10 +13,15 @@ import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
 import { osuAccountData } from '../utils/types';
 
-interface guildObject {
+export interface guildObject {
   voiceConnection: VoiceConnection;
   audioPlayer: AudioPlayer;
-  embed: EmbedBuilder;
+  queue: Array<string>;
+  embed: {
+    playerMessage?: Message<true>;
+    playerEmbed?: EmbedBuilder;
+    playerThread?: AnyThreadChannel<boolean>;
+  };
   status: {
     isPaused: boolean;
     onRepeat: boolean;
