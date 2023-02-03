@@ -42,7 +42,7 @@ GITHUB_BRANCH_URL= #By default is /master
 # Spotify client information
 SPOTIFY_ID= Spotify client id
 SPOTIFY_SECRET= Spotify client secret
-SPOTIFY_REFRESH_TOKEN= Spotify client refrsh toke
+SPOTIFY_REFRESH_TOKEN= Spotify client refrsh token
 SPOTIFY_MARKET= Spotify client market
 ```
 
