@@ -32,14 +32,18 @@ export async function execute(
 ) {
   const buttonsRow = new ActionRowBuilder<ButtonBuilder>().setComponents(
     new ButtonBuilder()
-      .setURL(client.ngrokUrl + '/placeholder')
-      .setLabel('🌿 Веб-сайт')
-      .setStyle(ButtonStyle.Link),
-    new ButtonBuilder()
       .setURL('https://github.com/richardscull/RichardsCoffeeShop')
       .setLabel('📂 GitHub')
       .setStyle(ButtonStyle.Link)
   );
+
+  if (client.ngrokUrl)
+    buttonsRow.addComponents(
+      new ButtonBuilder()
+        .setURL(client.ngrokUrl + '/placeholder')
+        .setLabel('🌿 Веб-сайт')
+        .setStyle(ButtonStyle.Link)
+    );
 
   const guildsCached = client.guilds.cache.size.toString();
   const usersInGuilds = client.guilds.cache
