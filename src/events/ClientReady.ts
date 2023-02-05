@@ -6,7 +6,7 @@ module.exports = {
   once: true,
   async execute(client: Client) {
     console.log(
-      chalk.green(`✅ Ready! Logged in as `) +
+      chalk.green(`\n✅ Ready! Logged in as `) +
         chalk.green.bold(client.user?.tag)
     );
     client.user?.setPresence({

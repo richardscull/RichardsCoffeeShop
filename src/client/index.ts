@@ -13,7 +13,7 @@ export const client = new ExtendedClient({
 });
 
 async function serverInitializing() {
-  client.discordLogin();
+  await client.discordLogin();
   client.ngrokUrl = await client.startWebServer();
 }
 
