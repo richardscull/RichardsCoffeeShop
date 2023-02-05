@@ -75,7 +75,7 @@ export async function execute(
           }\n` +
           `‣ Версия бота: Загрузка...\n` +
           `‣ Рестарт сервера был: ${time(
-            Math.floor(Date.now() / 1000) - os.uptime(),
+            Math.floor(Date.now() / 1000 - os.uptime()),
             'R'
           )}`,
         inline: true,
@@ -102,9 +102,9 @@ export async function execute(
         ngrok.getUrl() ? bold('Работает!') : bold('Выключен!')
       }\n` +
       `‣ Версия бота: ${inlineCode(lastestCommitId.slice(0, 7))}\n` +
-      `‣ Рестарт сервера был: <t:${
-        Math.floor(Date.now() / 1000) - os.uptime()
-      }:R>`;
+      `‣ Рестарт сервера был: <t:${Math.floor(
+        Date.now() / 1000 - os.uptime()
+      )}:R>`;
   }
 
   const totalPing = statusMsg.createdTimestamp - interaction.createdTimestamp;

@@ -12,13 +12,16 @@ import {
   ChatInputCommandInteraction,
   ComponentType,
   EmbedBuilder,
+  HexColorString,
   SlashCommandSubcommandBuilder,
   StringSelectMenuBuilder,
 } from 'discord.js';
+import { getAverageColor } from 'fast-average-color-node';
 import { ExtendedClient } from '../../client/ExtendedClient';
 import play, { SpotifyTrack, YouTubeVideo } from 'play-dl';
 import { millisecondsToString, numberWithDots } from '../../utils';
-import { guildObject } from '../../client/ExtendedClient';
+import { guildObject } from '../../utils/types';
+import { client } from '../../client';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
   return subcommand
@@ -58,14 +61,20 @@ export async function execute(
 
   if (!guildPlayer || !audioResource) return;
 
-  guildPlayer.queue.push(userSongUrl);
-
-  if (!interaction.replied)
-    interaction.reply({
-      content: '> 🌿 Песня была успешно добавлена в очередь!',
-      ephemeral: true,
+  guildPlayer.queue.push({
+    user: `${interaction.user.username}#${interaction.user.discriminator}`,
+    song: userSongUrl,
+  });
+  if (!interaction.replied) {
+    const videoData = (await play.video_info(userSongUrl)).video_details;
+    await interaction.editReply({
+      embeds: [
+        client.successEmbed(
+          `🌿 Песня ${videoData.title} была успешно добавлена в очередь!`
+        ),
+      ],
     });
-
+  }
   if (guildPlayer.queue.length < 2) guildPlayer.audioPlayer.play(audioResource);
 }
 
@@ -90,14 +99,22 @@ async function validateUrl(url: string) {
 
   if (play.yt_validate(url) === 'video') return url;
   if (play.yt_validate(url) === 'search') {
-    searchResult = await play.search(url, { limit: 5 });
-    if (!searchResult) return 'error';
+    const filteredResult: YouTubeVideo[] = [];
+    const searchResult = await play.search(url, {
+      limit: 30,
+      source: { youtube: 'video' },
+    });
+    searchResult.forEach((element) => {
+      if (filteredResult.length !== 5 && element.uploadedAt)
+        filteredResult.push(element);
+    });
+    if (!filteredResult) return 'error';
     return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId('videoSelect')
         .setPlaceholder('Результаты по вашему запросу')
         .setOptions(
-          searchResult.map((video) => ({
+          filteredResult.map((video) => ({
             label: video.title ? video.title.slice(0, 99) : '',
             description: `⌛: ${video.durationRaw} | 👀: ${numberWithDots(
               video.views
@@ -118,9 +135,12 @@ async function createGuildPlayer(
   const memberVoice = member.voice.channel;
   if (!textChannel || !memberVoice) return;
   if (textChannel.isThread() || textChannel.type !== ChannelType.GuildText) {
-    interaction.reply({
-      content: `🙏 Извините, но вы не можете использовать тут эту команду.`,
-      ephemeral: true,
+    interaction.editReply({
+      embeds: [
+        client.errorEmbed(
+          `🙏 Извините, но вы не можете использовать тут эту команду.`
+        ),
+      ],
     });
     return;
   }
@@ -139,22 +159,30 @@ async function createGuildPlayer(
 
   let embedInterval: NodeJS.Timeout;
 
+  audioPlayer.on(AudioPlayerStatus.Paused, async () => {
+    const guildPlayer = await client.getGuildPlayer(interaction.guildId);
+    if (!guildPlayer) return;
+    guildPlayer.status.isPaused = true;
+  });
+
   audioPlayer.on(AudioPlayerStatus.Playing, async () => {
     const guildPlayer = await client.getGuildPlayer(interaction.guildId);
     if (!guildPlayer) return;
     const { embed, status, audioPlayer, queue } = guildPlayer;
-    const videoData = (await play.video_info(queue[0])).video_details;
 
-    embed.playerEmbed = createMusicEmbed(guildPlayer, videoData);
+    if (status.isPaused) return (status.isPaused = false);
+    const videoData = (await play.video_info(queue[0].song)).video_details;
 
-    if (!embed.playerMessage && interaction.channel) {
+    embed.playerEmbed = await createMusicEmbed(guildPlayer, videoData);
+
+    if (!embed.playerMessage && interaction.channel && embed.playerEmbed) {
       embed.playerMessage = await interaction.channel.send({
         embeds: [embed.playerEmbed],
       });
       embed.playerThread = await embed.playerMessage.startThread({
         name: '🔊 Музыкальный плеер',
       });
-    } else if (embed.playerMessage) {
+    } else if (embed.playerMessage && embed.playerEmbed) {
       embed.playerMessage?.edit({ embeds: [embed.playerEmbed] });
     }
 
@@ -172,14 +200,14 @@ async function createGuildPlayer(
               `${status.isPaused ? '⏸ | ' : ''}${
                 status.onRepeat ? '🔁 | ' : ''
               }` +
-                `⌛ ${millisecondsToString(playbackDuration)} ${progressBar(
+                `🎧 ${millisecondsToString(playbackDuration)} ${progressBar(
                   playbackDuration,
                   videoData.durationInSec * 1000,
-                  10
+                  8
                 )} ${videoData.durationRaw}`
             )
             .setFooter({
-              text: `👤 Автор: ${videoData.channel} ${
+              text: `📨 Запросил: ${queue[0].user} ${
                 queue.length - 1
                   ? `| 🎼 Треков в очереди: ${queue.length - 1}`
                   : ''
@@ -191,20 +219,21 @@ async function createGuildPlayer(
   });
 
   audioPlayer.on(AudioPlayerStatus.Idle, async () => {
+    clearInterval(embedInterval);
+
     const guildPlayer = await client.getGuildPlayer(interaction.guildId);
     if (!guildPlayer) return;
     const { embed, status, queue } = guildPlayer;
     const { playerEmbed, playerMessage, playerThread } = embed;
-    clearInterval(embedInterval);
 
     if (!status.onRepeat) queue.shift();
     if (queue.length) {
-      const audioResource = await urlToAudioResource(queue[0]);
+      const audioResource = await urlToAudioResource(queue[0].song);
       return guildPlayer.audioPlayer.play(audioResource);
     } else if (playerEmbed) {
       playerEmbed.setDescription(`🌧 Плеер закончил свою работу`);
       playerMessage?.edit({ embeds: [playerEmbed] });
-      client.musicPlayer.delete(guildId);
+      client.deleteGuildPlayer(guildId);
       playerThread?.delete();
       return voiceConnection.destroy();
     }
@@ -237,9 +266,8 @@ async function handleStringSearch(
   searchResults: ActionRowBuilder<StringSelectMenuBuilder>,
   interaction: ChatInputCommandInteraction<'cached'>
 ) {
-  const selectMenu = interaction.reply({
+  const selectMenu = interaction.editReply({
     components: [searchResults],
-    ephemeral: true,
   });
 
   return (await selectMenu)
@@ -250,35 +278,44 @@ async function handleStringSearch(
     .then(async (interaction) => {
       const videoData = await play.video_basic_info(interaction.values[0]);
       interaction.update({
-        content: `> 🌿 Трек ${videoData.video_details.title} был успешно добавлен!`,
         components: [],
+        embeds: [
+          client.successEmbed(
+            `🌿 Трек ${videoData.video_details.title} был успешно добавлен!`
+          ),
+        ],
       });
 
       return interaction.values[0];
     });
 }
 
-function createMusicEmbed(guildPlayer: guildObject, videoData: YouTubeVideo) {
+async function createMusicEmbed(
+  guildPlayer: guildObject,
+  videoData: YouTubeVideo
+) {
   const { title, url, thumbnails, channel, durationRaw, durationInSec } =
     videoData;
   const { status, queue } = guildPlayer;
+  if (!channel?.icons || !channel.name) return;
+
   return new EmbedBuilder()
-    .setColor('#cd243b')
+    .setColor((await getAverageColor(thumbnails[3].url)).hex as HexColorString)
     .setAuthor({
-      name: '🔊 Сейчас играет',
-      iconURL:
-        'https://cdn.betterttv.net/emote/5f1b0186cf6d2144653d2970/3x.gif',
+      name: `${channel.name}`,
+      iconURL: channel.icons[2].url,
+      url: channel.url,
     })
-    .setTitle(`${title}`)
+    .setTitle(title as string)
     .setURL(url)
     .setDescription(
       `${status.isPaused ? '⏸ | ' : ''}${
         status.onRepeat ? '🔁 | ' : ''
-      }⌛ 00:00 ${progressBar(0, durationInSec * 1000, 10)} ${durationRaw}`
+      }🎧 00:00 ${progressBar(0, durationInSec * 1000, 10)} ${durationRaw}`
     )
     .setThumbnail(thumbnails[3].url)
     .setFooter({
-      text: `👤 Автор: ${channel} ${
+      text: `📨 Запросил: ${queue[0].user} ${
         queue.length - 1 ? `| 🎼 Треков в очереди: ${queue.length - 1}` : ''
       }`,
     });
