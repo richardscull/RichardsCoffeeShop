@@ -20,9 +20,16 @@ export async function serverStart() {
   });
 
   console.log(chalk.blue(`💤 Web server is loaded!`));
-  console.log(chalk.blue(`Currently hosted at `) + chalk.blue.bold(ngrokUrl));
   console.log(
-    chalk.yellow(`// Don't forget to change Discord/osu! callback urls!`)
+    chalk.blue(`└── Currently hosted at `) +
+      chalk.blue.bold(ngrokUrl) +
+      chalk.blue(' on port ') +
+      chalk.blue.bold(config.NGROK_PORT)
+  );
+  console.log(
+    chalk.yellow.italic(
+      `⚠️  Don't forget to change Discord/osu! callback urls!`
+    )
   );
 
   await expressJs(ngrokUrl);

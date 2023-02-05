@@ -5,9 +5,9 @@ import config from '../config';
 import chalk from 'chalk';
 import * as commandModules from '../commands';
 
-type Command = {
+interface Command {
   data: Pick<SlashCommandBuilder, 'toJSON'>;
-};
+}
 
 const commands: Pick<SlashCommandBuilder, 'toJSON'>[] = [];
 

@@ -9,11 +9,22 @@ module.exports = {
     if (!interaction.isChatInputCommand()) return;
 
     const { commandName } = interaction;
-
     try {
       await commands[commandName].execute(interaction, client);
-    } catch (error) {
-      console.error(`Error executing [${interaction.commandName}] | `, error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const getSubcommand = interaction.options.getSubcommand(false);
+      console.error(
+        `\n❌ An error has occurred while executing /${
+          interaction.commandName
+        } ${getSubcommand ? getSubcommand + ' ' : ''}|`,
+        error
+      );
+      if (error.code === 10062)
+        return console.log(
+          "\n💭 Look's like server-side took too long to handle initial response.\nIf you see this error very often, try to deferReply all Interactions.\n"
+        );
+
       if (interaction.replied) {
         return await interaction.followUp({
           content:

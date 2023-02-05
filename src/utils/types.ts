@@ -1,3 +1,6 @@
+import { AudioPlayer, VoiceConnection } from "@discordjs/voice";
+import { AnyThreadChannel, EmbedBuilder, Message } from "discord.js";
+
 export type osuCredentialsGrantResponse = {
   access_token: string;
   expires_in: number;
@@ -41,6 +44,26 @@ export type osuApiCreditals = {
   expires_in: number;
   token_type: 'Bearer';
 };
+
+export interface guildObject {
+  voiceConnection: VoiceConnection;
+  audioPlayer: AudioPlayer;
+  queue: Array<queuedSong>;
+  embed: {
+    playerMessage?: Message<true>;
+    playerEmbed?: EmbedBuilder;
+    playerThread?: AnyThreadChannel<boolean>;
+  };
+  status: {
+    isPaused: boolean;
+    onRepeat: boolean;
+  };
+}
+
+export type queuedSong = {
+  user: string,
+  song: string
+}
 
 export type osuProfile = {
   avatar_url: string;

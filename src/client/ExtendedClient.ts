@@ -1,32 +1,11 @@
-import {
-  AnyThreadChannel,
-  Client,
-  EmbedBuilder,
-  Message,
-} from 'discord.js';
-import { VoiceConnection, AudioPlayer } from '@discordjs/voice';
+import { Client, EmbedBuilder } from 'discord.js';
 import Jsoning from 'jsoning';
 import config from '../config';
 import * as play from 'play-dl';
 import path from 'path';
 import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
-import { osuAccountData } from '../utils/types';
-
-export interface guildObject {
-  voiceConnection: VoiceConnection;
-  audioPlayer: AudioPlayer;
-  queue: Array<string>;
-  embed: {
-    playerMessage?: Message<true>;
-    playerEmbed?: EmbedBuilder;
-    playerThread?: AnyThreadChannel<boolean>;
-  };
-  status: {
-    isPaused: boolean;
-    onRepeat: boolean;
-  };
-}
+import { guildObject, osuAccountData } from '../utils/types';
 
 export class ExtendedClient extends Client {
   musicPlayer = new Map<string, guildObject>();
@@ -76,11 +55,27 @@ export class ExtendedClient extends Client {
     });
   }
 
+  successEmbed(Title: string) {
+    const createEmbed = new EmbedBuilder()
+      .setTitle(Title.slice(0, 255))
+      .setColor('Green')
+      .setTimestamp();
+    return createEmbed;
+  }
+
+  errorEmbed(Title: string) {
+    const createEmbed = new EmbedBuilder()
+      .setTitle(Title.slice(0, 255))
+      .setColor('Red')
+      .setTimestamp();
+    return createEmbed;
+  }
+
   async startWebServer() {
     return await serverStart().catch((err) => {
       console.error(`[Web Server Error]`, err);
       process.exit(1);
-    });
+    })
   }
 
   async getOsuAccount(discordId: string) {
@@ -93,5 +88,9 @@ export class ExtendedClient extends Client {
 
   async getGuildPlayer(guildID: string) {
     if (this.musicPlayer.has(guildID)) return this.musicPlayer.get(guildID);
+  }
+
+  async deleteGuildPlayer(guildID: string) {
+    if (this.musicPlayer.has(guildID)) return this.musicPlayer.delete(guildID);
   }
 }
