@@ -6,7 +6,7 @@ import {
 import { ExtendedClient } from '../../client/ExtendedClient';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
-  return subcommand.setName('pause').setDescription('Функцию паузы трека');
+  return subcommand.setName('pause').setDescription('Функция паузы трека');
 };
 
 export async function execute(

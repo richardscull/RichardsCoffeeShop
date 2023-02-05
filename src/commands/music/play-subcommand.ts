@@ -30,7 +30,7 @@ export const data = (subcommand: SlashCommandSubcommandBuilder) => {
     .addStringOption((option) =>
       option
         .setName('track')
-        .setDescription('Введите трек или URL (Youtube)')
+        .setDescription('Введите название музыки или URL (Youtube, Spotify)')
         .setRequired(true)
     );
 };
