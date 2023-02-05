@@ -31,6 +31,11 @@ module.exports = {
             '> **Что-то пошло не так... **\n> ⚠️ Похоже возникла ошибка при исполнении этой команды!',
           ephemeral: true,
         });
+      } else if (interaction.deferred) {
+        return await interaction.editReply({
+          content:
+            '> **Что-то пошло не так... **\n> ⚠️ Похоже возникла ошибка при исполнении этой команды!',
+        });
       } else {
         return await interaction.reply({
           content:
