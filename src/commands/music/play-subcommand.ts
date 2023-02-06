@@ -194,7 +194,7 @@ async function createGuildPlayer(
       const { playbackDuration } = playerState;
 
       if (!embed.playerEmbed || !embed.playerMessage) return;
-      
+
       embed.playerMessage?.edit({
         embeds: [
           embed.playerEmbed
@@ -217,7 +217,7 @@ async function createGuildPlayer(
             }),
         ],
       });
-    }, 10000); //30s timer
+    }, 30 * 1000); //30s timer
   });
 
   audioPlayer.on(AudioPlayerStatus.Idle, async () => {
