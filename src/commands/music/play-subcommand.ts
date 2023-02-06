@@ -186,13 +186,15 @@ async function createGuildPlayer(
       embed.playerMessage?.edit({ embeds: [embed.playerEmbed] });
     }
 
-    embedInterval = setInterval(async () => {
+    embedInterval = setInterval(() => {
       if (!embed.playerMessage) return;
+      if (!embed.playerMessage.embeds[0]) return embed.playerMessage.delete();
+      console.log(embed.playerMessage);
       const playerState = audioPlayer.state as AudioPlayerPlayingState;
       const { playbackDuration } = playerState;
 
       if (!embed.playerEmbed || !embed.playerMessage) return;
-
+      
       embed.playerMessage?.edit({
         embeds: [
           embed.playerEmbed
@@ -215,7 +217,7 @@ async function createGuildPlayer(
             }),
         ],
       });
-    }, 30000); //30s timer
+    }, 10000); //30s timer
   });
 
   audioPlayer.on(AudioPlayerStatus.Idle, async () => {
