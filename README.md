@@ -15,13 +15,19 @@ To set up the self-hosted version of the bot, the following are required:
 2. Discord.js v14
 
 # ⚙️ Setup
-Before we can start the bot, we will need:
-- A Discord application. If you don't know how to do it, check [this guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html)!
+To start, clone the git repository and install all required dependencies:
+```shell
+git clone https://github.com/richardscull/RichardsCoffeeShop
+cd RichardsCoffeeShop
+npm install
+```
+
+But before we can start the bot, we will need:
+- A Discord application. If you don't know how to make one, check [this guide](https://discordjs.guide/preparations/setting-up-a-bot-application.html)!
 - An Ngrok account for free URL hosting
 - An osu! account to create an app for sending osu!API v2 requests
 
-After obtaining these, fill in the .env file with the required information: 
-
+After obtaining these, create and fill in the .env file with the required information: 
 ```env
 # Bot information
 DISCORD_SECRET= Discord application secret
