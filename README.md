@@ -52,7 +52,7 @@ SPOTIFY_REFRESH_TOKEN= Spotify client refrsh token
 SPOTIFY_MARKET= Spotify client market
 ```
 
-After that, you can successfully run bot by typing ```npm run build``` or ```yarn build```!
+After that, you can successfully run bot by typing ```npm run build:start``` or ```yarn build:start```!
 ###### Warning: Don't forget to configure callbacks after starting the bot. Refer to the section below for instructions.
 
 # 🖥️ Web server
