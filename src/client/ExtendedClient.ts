@@ -13,7 +13,7 @@ export class ExtendedClient extends Client {
   ngrokUrl = '';
 
   database = {
-    guilds: new Jsoning('guilds.json'),
+    emojis: new Jsoning('emojis.json'),
     osuUsers: new Jsoning('osuUsers.json'),
   };
 
@@ -35,6 +35,35 @@ export class ExtendedClient extends Client {
         market: config.SPOTIFY_MARKET,
       },
     });
+  }
+
+  async registerCustomEmojis() {
+    if (this.database.emojis.has('isGuildCreated')) return;
+    if (this.guilds.cache.size >= 10)
+      throw new Error(
+        "❌ Unfortunately bot couldn't register custom emotes.\nRefer to the FAQ on github page to fix this issue!"
+      );
+
+    const getBotsGuild = await this.guilds.create({
+      name: "Emoji's server",
+    });
+
+    this.database.emojis.set('isGuildCreated', true);
+
+    const emojis = [
+      'ProgressBarStart',
+      'Playing',
+      'ProgressBarMedium',
+      'ProgressBarWaiting',
+      'ProgressBarEnd',
+    ];
+    for (const emoji of emojis) {
+      const createdEmoji = await getBotsGuild.emojis.create({
+        attachment: `./images/emojis/${emoji}.webp`,
+        name: emoji,
+      });
+      await this.database.emojis.set(emoji, createdEmoji.id);
+    }
   }
 
   loadEvents() {
@@ -75,19 +104,26 @@ export class ExtendedClient extends Client {
     return await serverStart().catch((err) => {
       console.error(`[Web Server Error]`, err);
       process.exit(1);
-    })
+    });
+  }
+
+  async getEmoji(emojiName: string) {
+    if (this.database.emojis.has(emojiName)) {
+      const emojiId = await this.database.emojis.get(emojiName);
+      return `<:${emojiName}:${emojiId}>`;
+    }
   }
 
   async getOsuAccount(discordId: string) {
     return this.database.osuUsers.get(discordId) as osuAccountData;
   }
 
-  async deleteOsuAccount(discordId: string) {
-    return this.database.osuUsers.delete(discordId);
-  }
-
   async getGuildPlayer(guildID: string) {
     if (this.musicPlayer.has(guildID)) return this.musicPlayer.get(guildID);
+  }
+
+  async deleteOsuAccount(discordId: string) {
+    return this.database.osuUsers.delete(discordId);
   }
 
   async deleteGuildPlayer(guildID: string) {

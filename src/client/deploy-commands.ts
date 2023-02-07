@@ -23,7 +23,7 @@ rest
   .put(Routes.applicationCommands(config.DISCORD_ID), { body: commands })
   .then(() => {
     console.log(
-      chalk.green('✅ Successfully registered application commands.')
+      chalk.green('\n✅ Successfully registered application commands.')
     );
   })
   .catch(console.error);
