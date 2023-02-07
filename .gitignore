@@ -1,7 +1,6 @@
 build
 node_modules
-guilds.json
+emojis.json
 osuUsers.json
 .env
-.data
 .vscode

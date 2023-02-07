@@ -15,6 +15,7 @@ export const client = new ExtendedClient({
 async function serverInitializing() {
   await client.discordLogin();
   client.ngrokUrl = await client.startWebServer();
+  await client.registerCustomEmojis();
 }
 
 serverInitializing();

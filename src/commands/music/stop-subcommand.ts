@@ -44,6 +44,9 @@ export async function stopAudioPlayer(
     `🌧 Плеер остановил ` + interaction.user.toString()
   );
   playerEmbed.data.footer.text = playerEmbed.data.footer.text.split('|')[0];
-  playerMessage?.edit({ embeds: [playerEmbed] });
-  playerThread?.delete();
+  try {
+    await playerMessage?.edit({ embeds: [playerEmbed] });
+  } finally {
+    playerThread?.delete();
+  }
 }

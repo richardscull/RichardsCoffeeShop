@@ -183,40 +183,50 @@ async function createGuildPlayer(
         name: '🔊 Музыкальный плеер',
       });
     } else if (embed.playerMessage && embed.playerEmbed) {
-      embed.playerMessage?.edit({ embeds: [embed.playerEmbed] });
+      try {
+        await embed.playerMessage?.edit({ embeds: [embed.playerEmbed] });
+      } catch {
+        //
+      }
     }
 
-    embedInterval = setInterval(() => {
+    embedInterval = setInterval(async () => {
       if (!embed.playerMessage) return;
       if (!embed.playerMessage.embeds[0]) return embed.playerMessage.delete();
-      console.log(embed.playerMessage);
       const playerState = audioPlayer.state as AudioPlayerPlayingState;
       const { playbackDuration } = playerState;
+      const progressBar = await createProgressBar(
+        playbackDuration,
+        videoData.durationInSec * 1000,
+        8
+      );
 
       if (!embed.playerEmbed || !embed.playerMessage) return;
 
-      embed.playerMessage?.edit({
-        embeds: [
-          embed.playerEmbed
-            .setDescription(
-              `${status.isPaused ? '⏸ | ' : ''}${
-                status.onRepeat ? '🔁 | ' : ''
-              }` +
-                `🎧 ${millisecondsToString(playbackDuration)} ${progressBar(
-                  playbackDuration,
-                  videoData.durationInSec * 1000,
-                  8
-                )} ${videoData.durationRaw}`
-            )
-            .setFooter({
-              text: `📨 Запросил: ${queue[0].user} ${
-                queue.length - 1
-                  ? `| 🎼 Треков в очереди: ${queue.length - 1}`
-                  : ''
-              }`,
-            }),
-        ],
-      });
+      try {
+        await embed.playerMessage?.edit({
+          embeds: [
+            embed.playerEmbed
+              .setDescription(
+                `${status.isPaused ? '⏸ | ' : ''}${
+                  status.onRepeat ? '🔁 | ' : ''
+                }` +
+                  `🎧 ${millisecondsToString(
+                    playbackDuration
+                  )} ${progressBar} ${videoData.durationRaw}`
+              )
+              .setFooter({
+                text: `📨 Запросил: ${queue[0].user} ${
+                  queue.length - 1
+                    ? `| 🎼 Треков в очереди: ${queue.length - 1}`
+                    : ''
+                }`,
+              }),
+          ],
+        });
+      } finally {
+        //
+      }
     }, 30 * 1000); //30s timer
   });
 
@@ -234,9 +244,12 @@ async function createGuildPlayer(
       return guildPlayer.audioPlayer.play(audioResource);
     } else if (playerEmbed) {
       playerEmbed.setDescription(`🌧 Плеер закончил свою работу`);
-      playerMessage?.edit({ embeds: [playerEmbed] });
-      client.deleteGuildPlayer(guildId);
-      playerThread?.delete();
+      try {
+        await playerMessage?.edit({ embeds: [playerEmbed] });
+      } finally {
+        client.deleteGuildPlayer(guildId);
+        playerThread?.delete();
+      }
       return voiceConnection.destroy();
     }
   });
@@ -300,6 +313,7 @@ async function createMusicEmbed(
     videoData;
   const { status, queue } = guildPlayer;
   if (!channel?.icons || !channel.name) return;
+  const progressBar = await createProgressBar(0, durationInSec * 1000, 8);
 
   return new EmbedBuilder()
     .setColor((await getAverageColor(thumbnails[3].url)).hex as HexColorString)
@@ -313,7 +327,7 @@ async function createMusicEmbed(
     .setDescription(
       `${status.isPaused ? '⏸ | ' : ''}${
         status.onRepeat ? '🔁 | ' : ''
-      }🎧 00:00 ${progressBar(0, durationInSec * 1000, 10)} ${durationRaw}`
+      }🎧 00:00 ${progressBar} ${durationRaw}`
     )
     .setThumbnail(thumbnails[3].url)
     .setFooter({
@@ -323,14 +337,22 @@ async function createMusicEmbed(
     });
 }
 
-function progressBar(value: number, maxValue: number, size: number) {
+async function createProgressBar(
+  value: number,
+  maxValue: number,
+  size: number
+) {
   const percentage = value / maxValue;
   const progress = Math.round(size * percentage);
   const emptyProgress = size - progress;
 
-  return `<:ProgressBarStart:973650912788746301>${'<:Playing:973650912906190848>'.repeat(
-    progress
-  )}<:ProgressBarMedium:973650912293847041>${'<:ProgressBarWaiting:973650912755195974>'.repeat(
-    emptyProgress
-  )}<:ProgressBarEnd:973650912755208212>`;
+  return (
+    `${await client.getEmoji('ProgressBarStart')}` +
+    `${await client.getEmoji('Playing').then((e) => e?.repeat(progress))}` +
+    `${await client.getEmoji('ProgressBarMedium')}` +
+    `${await client
+      .getEmoji('ProgressBarWaiting')
+      .then((e) => e?.repeat(emptyProgress))}` +
+    `${await client.getEmoji('ProgressBarEnd')}`
+  );
 }
