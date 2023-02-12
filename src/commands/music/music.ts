@@ -24,12 +24,17 @@ import {
   data as skipSubcommand,
   execute as skipExecute,
 } from './skip-subcommand';
+import {
+  data as chaptersSubcommand,
+  execute as chaptersExecute,
+} from './chapters-subcommand';
 
 export const data = new SlashCommandBuilder()
   .setName('music')
   .setDescription('Музыкальные команды')
   .setDMPermission(false)
   .addSubcommand(playSubcommand)
+  .addSubcommand(chaptersSubcommand)
   .addSubcommand(stopSubcommand)
   .addSubcommand(repeatSubcommand)
   .addSubcommand(pauseSubcommand)
@@ -87,4 +92,5 @@ const subcommandFunctions: Record<
   repeat: repeatExecute,
   pause: pauseExecute,
   skip: skipExecute,
+  chapters: chaptersExecute,
 };

@@ -1,5 +1,5 @@
-import { AudioPlayer, VoiceConnection } from "@discordjs/voice";
-import { AnyThreadChannel, EmbedBuilder, Message } from "discord.js";
+import { AudioPlayer, VoiceConnection } from '@discordjs/voice';
+import { AnyThreadChannel, EmbedBuilder, Message } from 'discord.js';
 
 export type osuCredentialsGrantResponse = {
   access_token: string;
@@ -61,9 +61,16 @@ export interface guildObject {
 }
 
 export type queuedSong = {
-  user: string,
-  song: string
-}
+  user: string;
+  song: string;
+  seek?: number;
+};
+
+export type stringMenuOption = {
+  label: string;
+  description: string;
+  value: string;
+};
 
 export type osuProfile = {
   avatar_url: string;

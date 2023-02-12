@@ -192,9 +192,13 @@ async function createGuildPlayer(
 
     embedInterval = setInterval(async () => {
       if (!embed.playerMessage) return;
-      if (!embed.playerMessage.embeds[0]) return embed.playerMessage.delete();
+      if (embed.playerMessage.embeds.length < 0)
+        return embed.playerMessage.delete();
       const playerState = audioPlayer.state as AudioPlayerPlayingState;
-      const { playbackDuration } = playerState;
+      let { playbackDuration } = playerState;
+      playbackDuration = queue[0].seek
+        ? playbackDuration + queue[0].seek * 1000
+        : playbackDuration;
       const progressBar = await createProgressBar(
         playbackDuration,
         videoData.durationInSec * 1000,
@@ -240,7 +244,10 @@ async function createGuildPlayer(
 
     if (!status.onRepeat) queue.shift();
     if (queue.length) {
-      const audioResource = await urlToAudioResource(queue[0].song);
+      const audioResource = await urlToAudioResource(
+        queue[0].song,
+        queue[0]?.seek
+      );
       return guildPlayer.audioPlayer.play(audioResource);
     } else if (playerEmbed) {
       playerEmbed.setDescription(`🌧 Плеер закончил свою работу`);
@@ -270,14 +277,14 @@ async function createGuildPlayer(
   return await client.getGuildPlayer(guildId);
 }
 
-async function urlToAudioResource(trackURL: string) {
-  const stream = await play.stream(trackURL);
+export async function urlToAudioResource(trackURL: string, seek?: number) {
+  const stream = await play.stream(trackURL, { seek: seek });
   return createAudioResource(stream.stream, {
     inputType: stream.type,
   });
 }
 
-async function handleStringSearch(
+export async function handleStringSearch(
   searchResults: ActionRowBuilder<StringSelectMenuBuilder>,
   interaction: ChatInputCommandInteraction<'cached'>
 ) {
@@ -313,7 +320,12 @@ async function createMusicEmbed(
     videoData;
   const { status, queue } = guildPlayer;
   if (!channel?.icons || !channel.name) return;
-  const progressBar = await createProgressBar(0, durationInSec * 1000, 8);
+  const startTime = queue[0].seek ? queue[0].seek * 1000 : 0;
+  const progressBar = await createProgressBar(
+    startTime,
+    durationInSec * 1000,
+    8
+  );
 
   return new EmbedBuilder()
     .setColor((await getAverageColor(thumbnails[3].url)).hex as HexColorString)
@@ -327,7 +339,7 @@ async function createMusicEmbed(
     .setDescription(
       `${status.isPaused ? '⏸ | ' : ''}${
         status.onRepeat ? '🔁 | ' : ''
-      }🎧 00:00 ${progressBar} ${durationRaw}`
+      }🎧 ${millisecondsToString(startTime)} ${progressBar} ${durationRaw}`
     )
     .setThumbnail(thumbnails[3].url)
     .setFooter({
