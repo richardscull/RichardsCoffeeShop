@@ -11,7 +11,9 @@ import { createMenuReply } from '../../utils/selectMenuHandler';
 import { stringMenuOption } from '../../utils';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
-  return subcommand.setName('chapters').setDescription('негры пидорасы');
+  return subcommand
+    .setName('chapters')
+    .setDescription('Перемотать трек к определенной главе');
 };
 
 export async function execute(
