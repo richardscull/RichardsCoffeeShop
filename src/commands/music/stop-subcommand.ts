@@ -40,10 +40,14 @@ export async function stopAudioPlayer(
   const { playerEmbed, playerMessage, playerThread } = guildPlayer.embed;
 
   if (!playerEmbed?.data.footer?.text) return;
+
   playerEmbed.setDescription(
     `🌧 Плеер остановил ` + interaction.user.toString()
   );
+
   playerEmbed.data.footer.text = playerEmbed.data.footer.text.split('|')[0];
+
   await playerMessage?.edit({ embeds: [playerEmbed] });
+
   playerThread?.delete();
 }

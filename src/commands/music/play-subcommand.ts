@@ -11,17 +11,16 @@ import {
   ChannelType,
   ChatInputCommandInteraction,
   ComponentType,
-  EmbedBuilder,
-  HexColorString,
   SlashCommandSubcommandBuilder,
   StringSelectMenuBuilder,
 } from 'discord.js';
-import { getAverageColor } from 'fast-average-color-node';
+
 import { ExtendedClient } from '../../client/ExtendedClient';
 import play, { SpotifyTrack, YouTubeVideo } from 'play-dl';
 import { millisecondsToString, numberWithDots } from '../../utils';
-import { guildObject } from '../../utils/types';
+
 import { client } from '../../client';
+import { createMusicEmbed, createProgressBar } from './embedsHandler';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
   return subcommand
@@ -133,7 +132,9 @@ async function createGuildPlayer(
   const { channel, member, guildId, guild } = interaction;
   const textChannel = channel;
   const memberVoice = member.voice.channel;
+
   if (!textChannel || !memberVoice) return;
+
   if (textChannel.isThread() || textChannel.type !== ChannelType.GuildText) {
     interaction.editReply({
       embeds: [
@@ -167,11 +168,14 @@ async function createGuildPlayer(
 
   audioPlayer.on(AudioPlayerStatus.Playing, async () => {
     const guildPlayer = await client.getGuildPlayer(interaction.guildId);
+
     if (!guildPlayer) return;
+
     const { embed, status, audioPlayer, queue } = guildPlayer;
 
-    if (status.isPaused) return (status.isPaused = false);
     const videoData = (await play.video_info(queue[0].song)).video_details;
+
+    if (status.isPaused) return (status.isPaused = false);
 
     embed.playerEmbed = await createMusicEmbed(guildPlayer, videoData);
 
@@ -179,35 +183,37 @@ async function createGuildPlayer(
       embed.playerMessage = await interaction.channel.send({
         embeds: [embed.playerEmbed],
       });
+
       embed.playerThread = await embed.playerMessage.startThread({
         name: '🔊 Музыкальный плеер',
       });
-    } else if (embed.playerMessage && embed.playerEmbed) {
-      try {
-        await embed.playerMessage?.edit({ embeds: [embed.playerEmbed] });
-      } catch {
-        //
-      }
+    } else if (embed.playerMessage && embed.playerEmbed && embed.playerThread) {
+      embed.playerMessage?.edit({ embeds: [embed.playerEmbed] });
     }
 
+    // if (embed.playerThread) await sendSongEmbed(embed.playerThread, videoData);
+
     embedInterval = setInterval(async () => {
-      if (!embed.playerMessage) return;
-      if (embed.playerMessage.embeds.length < 0)
-        return embed.playerMessage.delete();
-      const playerState = audioPlayer.state as AudioPlayerPlayingState;
-      let { playbackDuration } = playerState;
-      playbackDuration = queue[0].seek
-        ? playbackDuration + queue[0].seek * 1000
-        : playbackDuration;
-      const progressBar = await createProgressBar(
-        playbackDuration,
-        videoData.durationInSec * 1000,
-        8
-      );
-
-      if (!embed.playerEmbed || !embed.playerMessage) return;
-
       try {
+        if (!embed.playerMessage) return;
+        if (embed.playerMessage.embeds.length < 0)
+          return embed.playerMessage.delete();
+
+        const playerState = audioPlayer.state as AudioPlayerPlayingState;
+
+        let { playbackDuration } = playerState;
+        playbackDuration = queue[0].seek
+          ? playbackDuration + queue[0].seek * 1000
+          : playbackDuration;
+
+        const progressBar = await createProgressBar(
+          playbackDuration,
+          videoData.durationInSec * 1000,
+          8
+        );
+
+        if (!embed.playerEmbed || !embed.playerMessage) return;
+
         await embed.playerMessage?.edit({
           embeds: [
             embed.playerEmbed
@@ -228,8 +234,8 @@ async function createGuildPlayer(
               }),
           ],
         });
-      } finally {
-        //
+      } catch {
+        //Empty try/catch, to handle invalid message edit requests.
       }
     }, 30 * 1000); //30s timer
   });
@@ -243,6 +249,7 @@ async function createGuildPlayer(
     const { playerEmbed, playerMessage, playerThread } = embed;
 
     if (!status.onRepeat) queue.shift();
+
     if (queue.length) {
       const audioResource = await urlToAudioResource(
         queue[0].song,
@@ -310,61 +317,4 @@ export async function handleStringSearch(
 
       return interaction.values[0];
     });
-}
-
-async function createMusicEmbed(
-  guildPlayer: guildObject,
-  videoData: YouTubeVideo
-) {
-  const { title, url, thumbnails, channel, durationRaw, durationInSec } =
-    videoData;
-  const { status, queue } = guildPlayer;
-  if (!channel?.icons || !channel.name) return;
-  const startTime = queue[0].seek ? queue[0].seek * 1000 : 0;
-  const progressBar = await createProgressBar(
-    startTime,
-    durationInSec * 1000,
-    8
-  );
-
-  return new EmbedBuilder()
-    .setColor((await getAverageColor(thumbnails[3].url)).hex as HexColorString)
-    .setAuthor({
-      name: `${channel.name}`,
-      iconURL: channel.icons[2].url,
-      url: channel.url,
-    })
-    .setTitle(title as string)
-    .setURL(url)
-    .setDescription(
-      `${status.isPaused ? '⏸ | ' : ''}${
-        status.onRepeat ? '🔁 | ' : ''
-      }🎧 ${millisecondsToString(startTime)} ${progressBar} ${durationRaw}`
-    )
-    .setThumbnail(thumbnails[3].url)
-    .setFooter({
-      text: `📨 Запросил: ${queue[0].user} ${
-        queue.length - 1 ? `| 🎼 Треков в очереди: ${queue.length - 1}` : ''
-      }`,
-    });
-}
-
-async function createProgressBar(
-  value: number,
-  maxValue: number,
-  size: number
-) {
-  const percentage = value / maxValue;
-  const progress = Math.round(size * percentage);
-  const emptyProgress = size - progress;
-
-  return (
-    `${await client.getEmoji('ProgressBarStart')}` +
-    `${await client.getEmoji('Playing').then((e) => e?.repeat(progress))}` +
-    `${await client.getEmoji('ProgressBarMedium')}` +
-    `${await client
-      .getEmoji('ProgressBarWaiting')
-      .then((e) => e?.repeat(emptyProgress))}` +
-    `${await client.getEmoji('ProgressBarEnd')}`
-  );
 }
