@@ -9,6 +9,7 @@ import play from 'play-dl';
 import { ExtendedClient } from '../../client/ExtendedClient';
 import { createMenuReply } from '../../utils/selectMenuHandler';
 import { stringMenuOption } from '../../utils';
+import { sendThreadEmbed } from './embedsHandler';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
   return subcommand
@@ -23,7 +24,7 @@ export async function execute(
   const guildPlayer = await client.getGuildPlayer(interaction.guildId);
   if (!guildPlayer) return;
 
-  const { queue } = guildPlayer;
+  const { queue, embed } = guildPlayer;
   const songToPlay = queue[0].song;
   const videoData = (await play.video_info(queue[0].song)).video_details;
 
@@ -53,6 +54,11 @@ export async function execute(
           client.successEmbed(`🌿 Переключаемся на главу ${choiceDes.label}`),
         ],
       });
+
+      if (embed.playerThread)
+        sendThreadEmbed(interaction, embed.playerThread, {
+          description: `⌛ Пользователь переключил трек **${videoData.title}** на главу **${choiceDes.label}**!`,
+        });
 
       queue.splice(1, 0, {
         song: queue[0].song,

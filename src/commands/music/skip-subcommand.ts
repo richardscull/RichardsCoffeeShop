@@ -3,6 +3,8 @@ import {
   SlashCommandSubcommandBuilder,
 } from 'discord.js';
 import { ExtendedClient } from '../../client/ExtendedClient';
+import { pluralize } from '../../utils/pluralize';
+import { sendThreadEmbed } from './embedsHandler';
 import { stopAudioPlayer } from './stop-subcommand';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
@@ -31,8 +33,8 @@ export async function execute(
     guildPlayer.queue.shift();
   }
 
-  const { queue } = guildPlayer;
-  if (queue.length < 2) {
+  const { queue, embed } = guildPlayer;
+  if (queue.length < 1) {
     await stopAudioPlayer(interaction, client, guildPlayer);
   } else {
     guildPlayer.status.isPaused = false;
@@ -44,6 +46,15 @@ export async function execute(
       ? `✅ ${timesToSkip} треков было пропущен!`
       : `✅ Текущий трек был пропущен!`
   );
+
+  if (embed.playerThread)
+    sendThreadEmbed(interaction, embed.playerThread, {
+      description: `⏭ Пользователь ${
+        timesToSkip
+          ? `пропустил **${timesToSkip}** ${pluralize(timesToSkip, 'трек')}!`
+          : `пропустил **текущий** трек!`
+      }`,
+    });
 
   return await interaction.editReply({
     embeds: [getEmbed],

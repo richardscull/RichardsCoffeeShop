@@ -46,7 +46,7 @@ export async function execute(
 ) {
   if (!interaction.inCachedGuild()) return;
   /*   Not sure if deferReply is a best practice here...
-  As our response from youtube relies on internet connection, it's better to defer the reply */
+  But, as our response from youtube relies on internet connection, it's better to defer the reply */
   await interaction.deferReply({ ephemeral: true });
 
   const memberInVoice = interaction.member.voice?.channel;
@@ -94,3 +94,4 @@ const subcommandFunctions: Record<
   skip: skipExecute,
   chapters: chaptersExecute,
 };
+
