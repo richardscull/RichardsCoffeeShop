@@ -52,14 +52,14 @@ export class ExtendedClient extends Client {
 
     const emojis = [
       'ProgressBarStart',
-      'Playing',
+      'ProgressBarPlaying',
       'ProgressBarMedium',
       'ProgressBarWaiting',
       'ProgressBarEnd',
     ];
     for (const emoji of emojis) {
       const createdEmoji = await getBotsGuild.emojis.create({
-        attachment: `./images/emojis/${emoji}.webp`,
+        attachment: `./images/emojis/${emoji}.png`,
         name: emoji,
       });
       await this.database.emojis.set(emoji, createdEmoji.id);
