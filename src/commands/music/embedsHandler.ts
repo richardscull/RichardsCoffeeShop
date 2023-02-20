@@ -123,7 +123,7 @@ export async function createMusicEmbed(
           status.onRepeat ? '🔁 | ' : ''
         }🎧 ${millisecondsToString(startTime)} ${progressBar} ${durationRaw}`
       )
-      .setThumbnail(thumbnails[thumbnails.length - 1].url)
+      .setThumbnail(thumbnails[3].url)
       .setFooter({
         text: `📨 Запросил: ${queue[0].user} ${
           queue.length - 1 ? `| 🎼 Треков в очереди: ${queue.length - 1}` : ''

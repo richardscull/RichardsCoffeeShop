@@ -17,7 +17,7 @@ import {
 
 import { ExtendedClient } from '../../client/ExtendedClient';
 import play, { SpotifyTrack, YouTubeVideo } from 'play-dl';
-import { millisecondsToString, numberWithDots } from '../../utils';
+import { guildObject, millisecondsToString, numberWithDots } from '../../utils';
 
 import { client } from '../../client';
 import { createMusicEmbed, createProgressBar } from './embedsHandler';
@@ -42,30 +42,55 @@ export async function execute(
   const userInputUrl = await validateUrl(userInput);
   let userSongUrl = '';
 
+  const guildPlayer = (await client.getGuildPlayer(interaction.guildId))
+    ? await client.getGuildPlayer(interaction.guildId)
+    : await createGuildPlayer(interaction, client);
+
+  if (!guildPlayer) return;
+
+  const hasEmptyQueue = guildPlayer.queue.length == 0;
+
   if (typeof userInputUrl === 'string') {
-    if (userInputUrl === 'error')
-      return console.error('unhandled error in music');
     userSongUrl = userInputUrl;
+
+    pushSong(interaction, guildPlayer, userSongUrl);
   }
 
   if (userInputUrl instanceof ActionRowBuilder<StringSelectMenuBuilder>) {
     const getUserChoice = await handleStringSearch(userInputUrl, interaction);
     userSongUrl = getUserChoice;
+
+    pushSong(interaction, guildPlayer, userSongUrl);
   }
 
-  const audioResource = await urlToAudioResource(userSongUrl);
-  const guildPlayer = (await client.getGuildPlayer(interaction.guildId))
-    ? await client.getGuildPlayer(interaction.guildId)
-    : await createGuildPlayer(interaction, client);
+  if (Array.isArray(userInputUrl)) {
+    for (let i = 0; i < userInputUrl.length; i++) {
+      await pushSong(interaction, guildPlayer, userInputUrl[i]);
+    }
+  }
 
-  if (!guildPlayer || !audioResource) return;
+  if (typeof userInputUrl === 'undefined') {
+    await interaction.editReply({
+      embeds: [
+        client.errorEmbed(`❌ Я не смог найти результатов по вашему запросу!`),
+      ],
+    });
+    return;
+  }
 
-  guildPlayer.queue.push({
-    user: `${interaction.user.username}#${interaction.user.discriminator}`,
-    song: userSongUrl,
-  });
-  if (!interaction.replied) {
+  if (Array.isArray(userInputUrl)) {
+    const playlistData = (await play.playlist_info(userInput)).title;
+
+    await interaction.editReply({
+      embeds: [
+        client.successEmbed(
+          `🌿 Плейлист ${playlistData} был успешно добавлен в очередь!`
+        ),
+      ],
+    });
+  } else {
     const videoData = (await play.video_info(userSongUrl)).video_details;
+
     await interaction.editReply({
       embeds: [
         client.successEmbed(
@@ -74,29 +99,53 @@ export async function execute(
       ],
     });
   }
-  if (guildPlayer.queue.length < 2) guildPlayer.audioPlayer.play(audioResource);
+
+  if (guildPlayer.queue.length < 2 || hasEmptyQueue) {
+    const audioResource = await urlToAudioResource(guildPlayer.queue[0].song);
+    guildPlayer.audioPlayer.play(audioResource);
+  }
+}
+
+async function pushSong(
+  interaction: ChatInputCommandInteraction<'cached'>,
+  guildPlayer: guildObject,
+  song: string
+) {
+  guildPlayer.queue.push({
+    user: `${interaction.user.username}#${interaction.user.discriminator}`,
+    song: song,
+  });
 }
 
 async function validateUrl(url: string) {
-  let spData;
-  let searchResult;
-
   if (play.sp_validate(url) !== 'search' && play.is_expired())
     await play.refreshToken();
 
-  switch (play.sp_validate(url)) {
-    case 'track':
-      spData = (await play.spotify(url)) as SpotifyTrack;
-      searchResult = await play.search(
-        `${spData.artists[0].name} ${spData.name}`,
-        { limit: 1 }
-      );
-      return searchResult[0].url;
-    case 'playlist': //To Implement
-    case 'album': //To Implement
+  if (play.sp_validate(url) === 'track') {
+    const spData = (await play.spotify(url)) as SpotifyTrack;
+    const searchResult = await play.search(
+      `${spData.artists[0].name} ${spData.name}`,
+      { limit: 10, source: { youtube: 'video' } }
+    );
+    return searchResult[0].url;
   }
 
-  if (play.yt_validate(url) === 'video') return url;
+  if (play.yt_validate(url) === 'video') {
+    const videoData = await play.video_info(url);
+
+    if (videoData.LiveStreamData.isLive) {
+      return undefined;
+    } else {
+      return url;
+    }
+  }
+
+  if (play.yt_validate(url) === 'playlist') {
+    const playlist = await play.playlist_info(url);
+
+    return (await playlist.all_videos()).map((video) => video.url);
+  }
+
   if (play.yt_validate(url) === 'search') {
     const filteredResult: YouTubeVideo[] = [];
     const searchResult = await play.search(url, {
@@ -107,7 +156,9 @@ async function validateUrl(url: string) {
       if (filteredResult.length !== 5 && element.uploadedAt)
         filteredResult.push(element);
     });
-    if (!filteredResult) return 'error';
+
+    if (!filteredResult.length) return undefined;
+
     return new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId('videoSelect')
