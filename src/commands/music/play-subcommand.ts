@@ -20,7 +20,11 @@ import play, { SpotifyTrack, YouTubeVideo } from 'play-dl';
 import { guildObject, millisecondsToString, numberWithDots } from '../../utils';
 
 import { client } from '../../client';
-import { createMusicEmbed, createProgressBar } from './embedsHandler';
+import {
+  createMusicEmbed,
+  createProgressBar,
+  sendThreadEmbed,
+} from './embedsHandler';
 
 export const data = (subcommand: SlashCommandSubcommandBuilder) => {
   return subcommand
@@ -79,17 +83,27 @@ export async function execute(
   }
 
   if (Array.isArray(userInputUrl)) {
-    const playlistData = (await play.playlist_info(userInput)).title;
+    const playlistTitle = (await play.playlist_info(userInput)).title;
+
+    if (guildPlayer.embed.playerThread)
+      sendThreadEmbed(interaction, guildPlayer.embed.playerThread, {
+        description: `📋 Пользователь добавил плейлист **${playlistTitle}** в очередь!`,
+      });
 
     await interaction.editReply({
       embeds: [
         client.successEmbed(
-          `🌿 Плейлист ${playlistData} был успешно добавлен в очередь!`
+          `🌿 Плейлист **${playlistTitle}** был успешно добавлен в очередь!`
         ),
       ],
     });
   } else {
     const videoData = (await play.video_info(userSongUrl)).video_details;
+
+    if (guildPlayer.embed.playerThread)
+      sendThreadEmbed(interaction, guildPlayer.embed.playerThread, {
+        description: `📋 Пользователь добавил песню ${videoData.title} в очередь!`,
+      });
 
     await interaction.editReply({
       embeds: [
