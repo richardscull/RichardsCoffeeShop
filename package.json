@@ -2,7 +2,6 @@
   "dependencies": {
     "@discordjs/builders": "^1.4.0",
     "@discordjs/rest": "^1.5.0",
-    "@discordjs/voice": "^0.14.0",
     "@types/dotenv": "^8.2.0",
     "axios": "^1.2.3",
     "chalk": "^4.1.2",
@@ -14,14 +13,12 @@
     "fast-average-color-node": "^2.6.0",
     "fs": "^0.0.1-security",
     "jsoning": "^0.13.23",
-    "libsodium-wrappers": "^0.7.10",
     "ngrok": "^4.3.3",
     "os": "^0.1.2",
     "path": "^0.12.7",
-    "play-dl": "^1.9.6",
     "serve-favicon": "^2.5.0"
   },
-  "name": "ts_discordbot",
+  "name": "richards_coffee_shop",
   "version": "1.0.0",
   "main": "index.js",
   "types": "index.d.ts",
