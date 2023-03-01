@@ -1,15 +1,12 @@
 import { Client, EmbedBuilder } from 'discord.js';
 import Jsoning from 'jsoning';
 import config from '../config';
-import * as play from 'play-dl';
 import path from 'path';
 import * as fs from 'fs';
 import { serverStart } from '../webserver/main';
-import { guildObject, osuAccountData } from '../utils/types';
+import { osuAccountData } from '../utils/types';
 
 export class ExtendedClient extends Client {
-  musicPlayer = new Map<string, guildObject>();
-
   ngrokUrl = '';
 
   database = {
@@ -19,21 +16,10 @@ export class ExtendedClient extends Client {
 
   async discordLogin() {
     this.loadEvents();
-    this.loginToSpotify();
+
     return await this.login(config.DISCORD_TOKEN).catch((err) => {
       console.error(`[Discord Login Error]`, err);
       process.exit(1);
-    });
-  }
-
-  async loginToSpotify() {
-    await play.setToken({
-      spotify: {
-        client_id: config.SPOTIFY_ID,
-        client_secret: config.SPOTIFY_SECRET,
-        refresh_token: config.SPOTIFY_REFRESH_TOKEN,
-        market: config.SPOTIFY_MARKET,
-      },
     });
   }
 
@@ -118,15 +104,7 @@ export class ExtendedClient extends Client {
     return this.database.osuUsers.get(discordId) as osuAccountData;
   }
 
-  async getGuildPlayer(guildID: string) {
-    if (this.musicPlayer.has(guildID)) return this.musicPlayer.get(guildID);
-  }
-
   async deleteOsuAccount(discordId: string) {
     return this.database.osuUsers.delete(discordId);
-  }
-
-  async deleteGuildPlayer(guildID: string) {
-    if (this.musicPlayer.has(guildID)) return this.musicPlayer.delete(guildID);
   }
 }

@@ -8,10 +8,6 @@ const {
   OSU_SECRET,
   OSU_ID,
   NGROK_TOKEN,
-  SPOTIFY_ID,
-  SPOTIFY_SECRET,
-  SPOTIFY_REFRESH_TOKEN,
-  SPOTIFY_MARKET,
 } = process.env;
 let { NGROK_PORT, GITHUB_BRANCH_URL } = process.env;
 
@@ -22,17 +18,6 @@ if (!DISCORD_SECRET || !DISCORD_TOKEN || !DISCORD_ID) {
 if (!OSU_SECRET || !OSU_ID || !NGROK_TOKEN) {
   throw new Error(
     chalk.yellowBright('⚠️   Missing web/osu! related arguments in .env file!')
-  );
-}
-
-if (
-  !SPOTIFY_ID ||
-  !SPOTIFY_SECRET ||
-  !SPOTIFY_REFRESH_TOKEN ||
-  !SPOTIFY_MARKET
-) {
-  throw new Error(
-    chalk.yellowBright('⚠️   Missing spotify related arguments in .env file!')
   );
 }
 
@@ -51,10 +36,6 @@ const config: Record<string, string> = {
   NGROK_TOKEN,
   OSU_SECRET,
   OSU_ID,
-  SPOTIFY_ID,
-  SPOTIFY_SECRET,
-  SPOTIFY_REFRESH_TOKEN,
-  SPOTIFY_MARKET,
 };
 
 export default config;
