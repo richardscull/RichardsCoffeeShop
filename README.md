@@ -5,10 +5,6 @@
 </h1>
 <h4 align="center">☕ An open-source, self-hosted Discord bot designed for the game "osu!" with additional features.<h4>
 
-# 📋 Public Testing
-If you want to try the bot before self-hosting him, you can add already hosted version of the bot, by clicking here!
-> ⚠️ Currently unavailable
-
 # 🔧 Requirements
 To set up the self-hosted version of the bot, the following are required:
 1. Node.js v16.9.0 or higher
